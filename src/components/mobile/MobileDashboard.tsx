@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { motion } from 'framer-motion';
 import { StatCard } from '../ui/StatCard';
 import { SectionTitle } from '../ui/SectionTitle';
@@ -9,12 +9,12 @@ import type { KPIData, UserProfile } from '../../types';
 interface MobileDashboardProps {
   kpiData: KPIData;
   userProfile: UserProfile;
-  onDataUpdate: (data: any) => void;
+  onDataUpdate: (_data: unknown) => void;
   onNavigate: (tab: string) => void;
 }
 
-export function MobileDashboard({ kpiData, userProfile, onDataUpdate, onNavigate }: MobileDashboardProps) {
-  const kpiCards = [
+export function MobileDashboard({ kpiData, userProfile, onDataUpdate: _onDataUpdate, onNavigate }: MobileDashboardProps) {
+  const kpiCards: Array<{ title: string; value: string; subtitle: string; icon: any; color: string; onClick: () => void }> = [
     {
       title: 'Davomat',
       value: `${kpiData.attendance.present}/${kpiData.attendance.total}`,
@@ -33,7 +33,7 @@ export function MobileDashboard({ kpiData, userProfile, onDataUpdate, onNavigate
     },
     {
       title: 'Jarimalar',
-      value: kpiData.penalties.active,
+      value: String(kpiData.penalties.active),
       subtitle: `${kpiData.penalties.resolved} hal qilingan`,
       icon: Calendar,
       color: 'bg-yellow-500',

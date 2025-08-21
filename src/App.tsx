@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'sonner';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -8,7 +8,7 @@ import { MobileHeader } from './components/mobile/MobileHeader';
 import { MobileTabBar } from './components/mobile/MobileTabBar';
 import { EmployeeTabBar } from './components/mobile/EmployeeTabBar';
 import { safeLocalStorage } from './utils/storage';
-import { DEFAULT_KPI_DATA, LOCAL_STORAGE_KEYS, USER_PROFILES } from './constants/app';
+import { DEFAULT_KPI_DATA, LOCAL_STORAGE_KEYS } from './constants/app';
 import { validateCredentials, getUserProfile, isEmployeeRole } from './utils/auth';
 import { createKPIUpdateHandler, simulateKPIUpdates } from './utils/kpi';
 import type { UserProfile, KPIData } from './types';
@@ -157,7 +157,7 @@ function App() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Header */}
         <MobileHeader
-          userProfile={userProfile}
+          userProfile={userProfile as UserProfile}
           isDark={isDark}
           onThemeToggle={toggleTheme}
         />
@@ -175,7 +175,7 @@ function App() {
               <AppRouter
                 activeTab={activeTab}
                 kpiData={kpiData}
-                userProfile={userProfile!}
+                userProfile={userProfile as UserProfile}
                 isDark={isDark}
                 onDataUpdate={handleDataUpdate}
                 onNavigate={handleNavigate}
@@ -188,7 +188,7 @@ function App() {
         </main>
 
         {/* Bottom Navigation */}
-        {isEmployeeRole(userProfile.role) ? (
+        {userProfile && isEmployeeRole(userProfile.role) ? (
           <EmployeeTabBar
             activeTab={activeTab}
             onNavigate={handleNavigate}
@@ -198,7 +198,7 @@ function App() {
           <MobileTabBar
             activeTab={activeTab}
             onNavigate={handleNavigate}
-            userProfile={userProfile}
+            userProfile={userProfile as UserProfile}
           />
         )}
 

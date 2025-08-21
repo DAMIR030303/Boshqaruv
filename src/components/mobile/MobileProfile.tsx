@@ -1,16 +1,16 @@
-import React from 'react';
+// import React from 'react';
 import { PlaceholderComponent } from './PlaceholderComponent';
 import type { KPIData, UserProfile } from '../../types';
 
 interface MobileProfileProps {
   kpiData: KPIData;
   userProfile: UserProfile;
-  onDataUpdate: (data: any) => void;
+  onDataUpdate: (_data: unknown) => void;
   onProfileUpdate: (profile: UserProfile) => void;
   onLogout: () => void;
 }
 
-export function MobileProfile({ kpiData, userProfile, onDataUpdate, onProfileUpdate, onLogout }: MobileProfileProps) {
+export function MobileProfile({ onProfileUpdate: _onProfileUpdate, onLogout: _onLogout }: MobileProfileProps) {
   return (
     <PlaceholderComponent
       title="Profil"

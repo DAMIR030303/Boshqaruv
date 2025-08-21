@@ -1,14 +1,14 @@
-import React from 'react';
+// import React from 'react';
 import { PlaceholderComponent } from './PlaceholderComponent';
 import type { KPIData, UserProfile } from '../../types';
 
 interface MobileTasksProps {
   kpiData: KPIData;
   userProfile: UserProfile;
-  onDataUpdate: (data: any) => void;
+  onDataUpdate: (_data: unknown) => void;
 }
 
-export function MobileTasks({ kpiData, userProfile, onDataUpdate }: MobileTasksProps) {
+export function MobileTasks(_: MobileTasksProps) {
   return (
     <PlaceholderComponent
       title="Vazifalar boshqaruvi"

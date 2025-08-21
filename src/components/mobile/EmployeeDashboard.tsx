@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { motion } from 'framer-motion';
 import { StatCard } from '../ui/StatCard';
 import { SectionTitle } from '../ui/SectionTitle';
@@ -10,14 +10,15 @@ import type { KPIData, UserProfile } from '../../types';
 interface EmployeeDashboardProps {
   kpiData: KPIData;
   userProfile: UserProfile;
-  onDataUpdate: (data: any) => void;
+  onDataUpdate: (_data: unknown) => void;
   onNavigate: (tab: string) => void;
 }
 
-export function EmployeeDashboard({ kpiData, userProfile, onDataUpdate, onNavigate }: EmployeeDashboardProps) {
+export function EmployeeDashboard({ kpiData, userProfile, onDataUpdate: _onDataUpdate, onNavigate }: EmployeeDashboardProps) {
   const isMarketing = userProfile.role === 'Marketing boshqaruvchisi';
   
-  const employeeCards = [
+  interface DashboardCardBase { title: string; value: string; subtitle: string; icon: any; color: string; onClick?: () => void }
+  const employeeCards: DashboardCardBase[] = [
     {
       title: 'Bugungi vazifalar',
       value: `${kpiData.tasks.completed}/${kpiData.tasks.total}`,
@@ -36,7 +37,7 @@ export function EmployeeDashboard({ kpiData, userProfile, onDataUpdate, onNaviga
     }
   ];
 
-  const marketingCards = [
+  const marketingCards: DashboardCardBase[] = [
     {
       title: 'Instagram postlar',
       value: '15/18',

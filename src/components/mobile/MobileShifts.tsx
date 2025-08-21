@@ -1,14 +1,14 @@
-import React from 'react';
+// import React from 'react';
 import { PlaceholderComponent } from './PlaceholderComponent';
 import type { KPIData, UserProfile } from '../../types';
 
 interface MobileShiftsProps {
   kpiData: KPIData;
   userProfile: UserProfile;
-  onDataUpdate: (data: any) => void;
+  onDataUpdate: (_data: unknown) => void;
 }
 
-export function MobileShifts({ kpiData, userProfile, onDataUpdate }: MobileShiftsProps) {
+export function MobileShifts(_: MobileShiftsProps) {
   return (
     <PlaceholderComponent
       title="Smenalar boshqaruvi"

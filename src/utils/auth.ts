@@ -1,16 +1,5 @@
 import { VALID_CREDENTIALS, USER_PROFILES } from '../constants/app';
-
-export interface LoginCredentials {
-  username: string;
-  password: string;
-}
-
-export interface UserProfile {
-  name: string;
-  role: string;
-  avatar: string;
-  status: string;
-}
+import type { LoginCredentials, UserProfile } from '../types';
 
 export const validateCredentials = async (credentials: LoginCredentials): Promise<boolean> => {
   // Simulate API call
@@ -22,7 +11,8 @@ export const validateCredentials = async (credentials: LoginCredentials): Promis
 };
 
 export const getUserProfile = (username: string): UserProfile => {
-  return USER_PROFILES[username as keyof typeof USER_PROFILES] || USER_PROFILES.admin;
+  const profile = USER_PROFILES[username as keyof typeof USER_PROFILES] || USER_PROFILES.admin;
+  return profile as unknown as UserProfile;
 };
 
 export const getPageTitle = (tab: string): string => {
@@ -41,6 +31,6 @@ export const getPageTitle = (tab: string): string => {
   return titles[tab] || 'Boshqaruv';
 };
 
-export const isEmployeeRole = (role: string): boolean => {
-  return role === 'Marketolog' || role === 'Xodim' || role === 'Marketing boshqaruvchisi';
+export const isEmployeeRole = (role: UserProfile['role']): boolean => {
+  return role === 'Xodim' || role === 'Marketing boshqaruvchisi';
 };

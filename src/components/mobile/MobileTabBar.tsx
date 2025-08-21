@@ -1,6 +1,6 @@
-import React from 'react';
+// import React from 'react';
 import { motion } from 'framer-motion';
-import { IconButton } from '../ui/IconButton';
+// import { IconButton } from '../ui/IconButton';
 import { Home, Users, Clock, CheckSquare, Calendar, AlertTriangle, BarChart3, Settings, User } from 'lucide-react';
 import type { UserProfile } from '../../types';
 
@@ -10,7 +10,7 @@ interface MobileTabBarProps {
   userProfile: UserProfile;
 }
 
-export function MobileTabBar({ activeTab, onNavigate, userProfile }: MobileTabBarProps) {
+export function MobileTabBar({ activeTab, onNavigate, userProfile: _userProfile }: MobileTabBarProps) {
   const tabs = [
     { id: 'dashboard', label: 'Bosh', icon: Home },
     { id: 'employees', label: 'Xodimlar', icon: Users },
@@ -26,10 +26,10 @@ export function MobileTabBar({ activeTab, onNavigate, userProfile }: MobileTabBa
   return (
     <nav className="mobile-tab-bar">
       <div className="relative flex items-center justify-between px-2">
-        {tabs.map((tab, idx) => {
+        {tabs.map((tab, _idx) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
-          const isCenter = idx === 0; // we'll overlay floating home; keep regular items too
+          // const isCenter = idx === 0; // overlay floating home; keep regular items too
           return (
             <motion.button
               key={tab.id}

@@ -1,14 +1,14 @@
-import React from 'react';
+// import React from 'react';
 import { PlaceholderComponent } from './PlaceholderComponent';
 import type { KPIData, UserProfile } from '../../types';
 
 interface MobilePenaltiesProps {
   kpiData: KPIData;
   userProfile: UserProfile;
-  onDataUpdate: (data: any) => void;
+  onDataUpdate: (_data: unknown) => void;
 }
 
-export function MobilePenalties({ kpiData, userProfile, onDataUpdate }: MobilePenaltiesProps) {
+export function MobilePenalties(_: MobilePenaltiesProps) {
   return (
     <PlaceholderComponent
       title="Jarimalar boshqaruvi"

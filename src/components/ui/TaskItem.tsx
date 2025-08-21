@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { Badge } from './Badge';
 import { Clock } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export function TaskItem({ title, priority, time, done = false }: TaskItemProps)
       <div className="flex-1 min-w-0">
         <p className={"text-sm font-medium truncate " + (done ? 'line-through text-gray-500 dark:text-gray-400' : 'text-gray-900 dark:text-white')}>{title}</p>
         <div className="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-          <Badge variant={priVariant as any}>{priority}</Badge>
+          <Badge variant={priVariant as 'danger' | 'warning' | 'muted'}>{priority}</Badge>
           <span className="inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{time}</span>
         </div>
       </div>

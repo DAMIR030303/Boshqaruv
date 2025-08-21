@@ -1,6 +1,6 @@
-import React from 'react';
+// import React from 'react';
 import { motion } from 'framer-motion';
-import { IconButton } from '../ui/IconButton';
+// import { IconButton } from '../ui/IconButton';
 import { Home, CheckSquare, Calendar, BarChart3, Settings, User } from 'lucide-react';
 import type { UserProfile } from '../../types';
 
@@ -10,7 +10,7 @@ interface EmployeeTabBarProps {
   userProfile: UserProfile;
 }
 
-export function EmployeeTabBar({ activeTab, onNavigate, userProfile }: EmployeeTabBarProps) {
+export function EmployeeTabBar({ activeTab, onNavigate, userProfile: _userProfile }: EmployeeTabBarProps) {
   const tabs = [
     { id: 'dashboard', label: 'Bosh', icon: Home },
     { id: 'tasks', label: 'Vazifalar', icon: CheckSquare },

@@ -1,14 +1,14 @@
-import React from 'react';
+// import React from 'react';
 import { PlaceholderComponent } from './PlaceholderComponent';
 import type { KPIData, UserProfile } from '../../types';
 
 interface MobileEmployeesProps {
   kpiData: KPIData;
   userProfile: UserProfile;
-  onDataUpdate: (data: any) => void;
+  onDataUpdate: (_data: unknown) => void;
 }
 
-export function MobileEmployees({ kpiData, userProfile, onDataUpdate }: MobileEmployeesProps) {
+export function MobileEmployees(_: MobileEmployeesProps) {
   return (
     <PlaceholderComponent
       title="Xodimlar boshqaruvi"

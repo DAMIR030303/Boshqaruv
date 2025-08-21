@@ -25,7 +25,7 @@ interface AppRouterProps {
   kpiData: KPIData;
   userProfile: UserProfile;
   isDark: boolean;
-  onDataUpdate: (data: any) => void;
+  onDataUpdate: (_data: unknown) => void;
   onNavigate: (tab: string) => void;
   onThemeToggle: () => void;
   onProfileUpdate: (profile: UserProfile) => void;
