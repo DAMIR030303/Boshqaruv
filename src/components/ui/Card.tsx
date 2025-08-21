@@ -11,8 +11,8 @@ export function Card({ className, children, elevated = false, padding = 'md', ..
   return (
     <div
       className={clsx(
-        'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl',
-        elevated && 'shadow-sm',
+        'bg-white/70 dark:bg-gray-800/60 backdrop-blur-md border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-md transition-all duration-200',
+        elevated && 'shadow-lg',
         paddingClass,
         className
       )}

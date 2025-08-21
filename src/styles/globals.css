@@ -47,7 +47,7 @@
   }
 
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6;
+    @apply bg-white/70 dark:bg-gray-800/60 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200/70 dark:border-gray-700/60 p-6 transition-all duration-200;
   }
 
   .input-field {
@@ -68,7 +68,7 @@
   }
 
   .mobile-tab-bar {
-    @apply fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur border-t border-gray-200 dark:border-gray-700 px-4 py-2 shadow-soft;
+    @apply fixed bottom-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 px-4 py-2 shadow-md;
     padding-bottom: calc(env(safe-area-inset-bottom) + 8px);
   }
 

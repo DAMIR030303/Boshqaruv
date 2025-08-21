@@ -25,7 +25,7 @@ export function MobileHeader({ userProfile, isDark, onThemeToggle }: MobileHeade
   };
 
   return (
-    <header className="mobile-header">
+    <header className="mobile-header backdrop-blur-md bg-white/70 dark:bg-gray-900/60">
       <div className="flex items-center justify-between">
         {/* Left side - Logo and Menu */}
         <div className="flex items-center space-x-3">
@@ -77,7 +77,7 @@ export function MobileHeader({ userProfile, isDark, onThemeToggle }: MobileHeade
 
           {/* User Profile */}
           <motion.div
-            className="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
+            className="flex items-center space-x-2 p-2 rounded-xl bg-white/70 dark:bg-gray-800/60 backdrop-blur-md hover:shadow-md transition-all duration-200 cursor-pointer"
             whileHover={{ scale: 1.02 }}
           >
             <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center">

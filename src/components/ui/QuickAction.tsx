@@ -17,7 +17,7 @@ export function QuickAction({ title, subtitle, icon: Icon, colorClass = 'bg-prim
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
     >
-      <div className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 flex items-center">
+      <div className="w-full bg-white/70 dark:bg-gray-800/60 backdrop-blur-md border border-gray-200/70 dark:border-gray-700/60 rounded-2xl px-4 py-3 flex items-center shadow-md active:scale-95 transition-all duration-150">
         <div className={`w-10 h-10 ${colorClass} rounded-full flex items-center justify-center text-white mr-3`}
              aria-hidden>
           <Icon className="w-5 h-5" />
