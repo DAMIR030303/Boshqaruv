@@ -89,21 +89,6 @@ src/
 └── main.tsx             # Entry point
 ```
 
-### Monorepo bo'limlari
-
-```
-.
-├── src/                      # Asosiy frontend (React + Vite)
-├── Boshqaruv/                # Monorepo ichki katalogi
-│   └── BoshqaruvDesign/      # Dizayn va UI prototiplari (alohida Vite app)
-│       ├── src/
-│       ├── package.json
-│       └── vite.config.ts
-├── package.json              # Ildiz npm konfiguratsiyasi
-├── vite.config.ts            # Dev server: port 3000, host: true
-└── .gitignore                # Git ignor ro'yxati
-```
-
 Eslatma: Dev server hozir 3000-portda ishlaydi. Portni o‘zgartirish uchun `vite.config.ts` dagi `server.port` qiymatini almashtiring.
 
 ## 🎨 Dizayn Tizimi
