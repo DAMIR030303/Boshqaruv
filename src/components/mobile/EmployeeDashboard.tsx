@@ -40,24 +40,24 @@ export function EmployeeDashboard({ kpiData, userProfile, onDataUpdate: _onDataU
   const marketingCards: DashboardCardBase[] = [
     {
       title: 'Instagram postlar',
-      value: '15/18',
-      subtitle: 'Kunlik maqsad',
+      value: '15',
+      subtitle: '/18',
       icon: Target,
-      color: 'bg-purple-500'
+      color: 'bg-pink-500'
     },
     {
       title: 'Video montaj',
-      value: '10/15',
-      subtitle: 'Kunlik maqsad',
+      value: '10',
+      subtitle: '/15',
       icon: TrendingUp,
-      color: 'bg-pink-500'
+      color: 'bg-blue-500'
     },
     {
       title: 'Kontent monitoring',
       value: 'Aktiv',
       subtitle: 'Real vaqtda',
       icon: Clock,
-      color: 'bg-indigo-500'
+      color: 'bg-green-500'
     }
   ];
 
@@ -99,6 +99,11 @@ export function EmployeeDashboard({ kpiData, userProfile, onDataUpdate: _onDataU
               subtitle={card.subtitle}
               icon={card.icon}
               colorClass={card.color}
+              containerClass={card.title.includes('Instagram') ? 'bg-pink-50/80 dark:bg-fuchsia-900/20' : card.title.includes('Video') ? 'bg-blue-50/80 dark:bg-blue-900/20' : 'bg-green-50/80 dark:bg-emerald-900/20'}
+              progressCurrent={card.title.includes('Instagram') ? 15 : card.title.includes('Video') ? 10 : undefined as any}
+              progressTotal={card.title.includes('Instagram') ? 18 : card.title.includes('Video') ? 15 : undefined as any}
+              progressColorClass={card.title.includes('Instagram') ? 'bg-blue-700' : 'bg-blue-600'}
+              trackColorClass={'bg-blue-100 dark:bg-gray-700'}
               onClick={card.onClick}
             />
           </motion.div>
