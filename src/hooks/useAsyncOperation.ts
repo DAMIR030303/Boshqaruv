@@ -6,15 +6,15 @@ interface UseAsyncOperationState<T> {
   error: string | null;
 }
 
-interface UseAsyncOperationReturn<T> extends UseAsyncOperationState<T> {
-  execute: (...args: any[]) => Promise<T | null>;
+interface UseAsyncOperationReturn<T, Args extends unknown[] = unknown[]> extends UseAsyncOperationState<T> {
+  execute: (...args: Args) => Promise<T | null>;
   reset: () => void;
 }
 
-export function useAsyncOperation<T = any>(
-  asyncFunction: (...args: any[]) => Promise<T>,
+export function useAsyncOperation<T = unknown, Args extends unknown[] = unknown[]>(
+  asyncFunction: (...args: Args) => Promise<T>,
   initialData: T | null = null
-): UseAsyncOperationReturn<T> {
+): UseAsyncOperationReturn<T, Args> {
   const [state, setState] = useState<UseAsyncOperationState<T>>({
     data: initialData,
     loading: false,
@@ -22,7 +22,7 @@ export function useAsyncOperation<T = any>(
   });
 
   const execute = useCallback(
-    async (...args: any[]) => {
+    async (...args: Args) => {
       try {
         setState(prev => ({ ...prev, loading: true, error: null }));
         const result = await asyncFunction(...args);

@@ -34,8 +34,10 @@ export function usePerformanceMonitor(
     // Get memory usage if available
     let memoryUsage: number | undefined;
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
-      memoryUsage = memory.usedJSHeapSize / 1024 / 1024; // Convert to MB
+      const memory = (performance as Performance & { memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
+      if (memory) {
+        memoryUsage = memory.usedJSHeapSize / 1024 / 1024; // Convert to MB
+      }
     }
 
     const metric: PerformanceMetrics = {
@@ -53,9 +55,11 @@ export function usePerformanceMonitor(
 
     // Log slow renders
     if (renderTime > threshold && logToConsole) {
-      console.warn(
-        `Slow render detected in ${componentName}: ${renderTime.toFixed(2)}ms (threshold: ${threshold}ms)`
-      );
+      if (import.meta.env.VITE_APP_ENV === 'development') {
+        console.warn(
+          `Slow render detected in ${componentName}: ${renderTime.toFixed(2)}ms (threshold: ${threshold}ms)`
+        );
+      }
     }
 
     return metric;

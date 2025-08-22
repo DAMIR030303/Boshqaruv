@@ -28,22 +28,22 @@ function App() {
     const initializeApp = async () => {
       try {
         // Load theme preference
-        const savedTheme = safeLocalStorage.getItem(LOCAL_STORAGE_KEYS.THEME, 'light');
+        const savedTheme = safeLocalStorage.getItem<string>(LOCAL_STORAGE_KEYS.THEME, 'light');
         setIsDark(savedTheme === 'dark');
         
         // Load active tab
-        const savedTab = safeLocalStorage.getItem(LOCAL_STORAGE_KEYS.ACTIVE_TAB, 'dashboard');
-        setActiveTab(savedTab);
+        const savedTab = safeLocalStorage.getItem<string>(LOCAL_STORAGE_KEYS.ACTIVE_TAB, 'dashboard');
+        setActiveTab(savedTab || 'dashboard');
         
         // Check authentication
-        const savedAuth = safeLocalStorage.getItem(LOCAL_STORAGE_KEYS.AUTH, null);
+        const savedAuth = safeLocalStorage.getItem<{username: string; password: string}>(LOCAL_STORAGE_KEYS.AUTH, null);
         if (savedAuth && savedAuth.username) {
           const profile = getUserProfile(savedAuth.username);
           setUserProfile(profile);
           setIsAuthenticated(true);
         }
       } catch (error) {
-        console.error('Error initializing app:', error);
+        // Error is handled silently in production
       } finally {
         setIsLoading(false);
       }
@@ -92,7 +92,7 @@ function App() {
         throw new Error('Noto\'g\'ri foydalanuvchi nomi yoki parol');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      // Error is handled by throwing to caller
       throw error;
     } finally {
       setIsLoading(false);

@@ -1,18 +1,24 @@
-import { VALID_CREDENTIALS, USER_PROFILES } from '../constants/app';
+import { login, getSession } from '../services/authService';
 import type { LoginCredentials, UserProfile } from '../types';
 
 export const validateCredentials = async (credentials: LoginCredentials): Promise<boolean> => {
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  return VALID_CREDENTIALS.some(
-    cred => cred.username === credentials.username && cred.password === credentials.password
-  );
+  const result = await login(credentials);
+  return result.success;
 };
 
-export const getUserProfile = (username: string): UserProfile => {
-  const profile = USER_PROFILES[username as keyof typeof USER_PROFILES] || USER_PROFILES.admin;
-  return profile as unknown as UserProfile;
+export const getUserProfile = (_username?: string): UserProfile => {
+  const session = getSession();
+  if (session.isValid && session.user) {
+    return session.user;
+  }
+  
+  // Fallback for backwards compatibility
+  return {
+    name: 'Guest User',
+    role: 'Xodim' as const,
+    avatar: '/api/placeholder/40/40',
+    status: 'offline' as const
+  };
 };
 
 export const getPageTitle = (tab: string): string => {

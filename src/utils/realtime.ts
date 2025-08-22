@@ -13,7 +13,7 @@ export function subscribeToTables(
       'postgres_changes',
       { event: '*', schema: 'public', table },
       (payload) => {
-        const next = (payload as any)?.new
+        const next = (payload as { new?: unknown })?.new
         onChange(next ?? payload)
       }
     )

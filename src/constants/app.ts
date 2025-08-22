@@ -5,39 +5,16 @@ export const LOCAL_STORAGE_KEYS = {
   AUTH: 'boshqaruv-mobile-auth'
 } as const;
 
-export const VALID_CREDENTIALS = [
-  { username: 'admin', password: 'admin123' },
-  { username: 'manager', password: 'manager123' },
-  { username: 'user', password: 'user123' },
-  { username: 'marketolog', password: 'marketing123' }
-] as const;
-
-export const USER_PROFILES = {
-  admin: {
-    name: 'Alisher Fayzullayev',
-    role: 'Administrator' as const,
-    avatar: '/api/placeholder/40/40',
-    status: 'online' as const
-  },
-  manager: {
-    name: 'Nargiza Karimova',
-    role: 'Manager' as const,
-    avatar: '/api/placeholder/40/40',
-    status: 'online' as const
-  },
-  user: {
-    name: 'Javohir Tursunov',
-    role: 'Xodim' as const,
-    avatar: '/api/placeholder/40/40',
-    status: 'online' as const
-  },
-  marketolog: {
-    name: 'Shaxriddin Adizov Sherali o\'g\'li',
-    role: 'Marketing boshqaruvchisi' as const,
-    avatar: '/api/placeholder/40/40',
-    status: 'online' as const
-  }
+// User roles configuration (no sensitive data)
+export const USER_ROLES = {
+  ADMIN: 'Administrator',
+  MANAGER: 'Manager',
+  EMPLOYEE: 'Xodim',
+  MARKETING: 'Marketing boshqaruvchisi'
 } as const;
+
+// Demo mode indicator (for development only)
+export const IS_DEMO_MODE = import.meta.env.VITE_APP_ENV === 'development';
 
 export const DEFAULT_USER_PROFILE = {
   name: 'Alisher Fayzullayev',
