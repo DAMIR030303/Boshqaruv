@@ -12,7 +12,7 @@ import { DEFAULT_KPI_DATA, LOCAL_STORAGE_KEYS } from './constants/app';
 import { validateCredentials, getUserProfile, isEmployeeRole } from './utils/auth';
 import { createKPIUpdateHandler, simulateKPIUpdates } from './utils/kpi';
 import type { UserProfile, KPIData } from './types';
-import { supabase } from './utils/supabaseClient';
+import { subscribeToTables } from './utils/realtime';
 
 function App() {
   // State management
@@ -129,27 +129,16 @@ function App() {
     }
   }, [isAuthenticated]);
 
-  // Supabase Realtime subscription for KPI updates
+  // Supabase Realtime subscription for multiple tables
   useEffect(() => {
     if (!isAuthenticated) return;
-
-    const channel = supabase
-      .channel('realtime:kpi')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'kpi' },
-        (payload) => {
-          const next = (payload as any)?.new;
-          const data = (next && (next.data ?? next)) ?? payload;
-          (handleDataUpdate as unknown as (d: unknown) => void)(data);
-        }
-      );
-
-    channel.subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    const cleanup = subscribeToTables(
+      ['kpi', 'tasks', 'attendance', 'shifts', 'penalties', 'reports'],
+      (payload) => {
+        (handleDataUpdate as unknown as (d: unknown) => void)(payload);
+      }
+    );
+    return cleanup;
   }, [isAuthenticated, handleDataUpdate]);
 
   // Loading state
