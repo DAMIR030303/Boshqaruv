@@ -43,21 +43,21 @@ export function EmployeeDashboard({ kpiData, userProfile, onDataUpdate: _onDataU
       value: '15',
       subtitle: '/18',
       icon: Target,
-      color: 'bg-pink-500'
+      color: 'bg-instagram-600'
     },
     {
       title: 'Video montaj',
       value: '10',
       subtitle: '/15',
       icon: TrendingUp,
-      color: 'bg-blue-500'
+      color: 'bg-video-600'
     },
     {
       title: 'Kontent monitoring',
       value: 'Aktiv',
       subtitle: 'Real vaqtda',
       icon: Clock,
-      color: 'bg-green-500'
+      color: 'bg-content-600'
     }
   ];
 
@@ -99,11 +99,11 @@ export function EmployeeDashboard({ kpiData, userProfile, onDataUpdate: _onDataU
               subtitle={card.subtitle}
               icon={card.icon}
               colorClass={card.color}
-              containerClass={card.title.includes('Instagram') ? 'bg-pink-50/80 dark:bg-fuchsia-900/20' : card.title.includes('Video') ? 'bg-blue-50/80 dark:bg-blue-900/20' : 'bg-green-50/80 dark:bg-emerald-900/20'}
-              progressCurrent={card.title.includes('Instagram') ? 15 : card.title.includes('Video') ? 10 : undefined as any}
-              progressTotal={card.title.includes('Instagram') ? 18 : card.title.includes('Video') ? 15 : undefined as any}
-              progressColorClass={card.title.includes('Instagram') ? 'bg-blue-700' : 'bg-blue-600'}
-              trackColorClass={'bg-blue-100 dark:bg-gray-700'}
+              bgClass={card.title.includes('Instagram') ? 'bg-instagram-50/80 dark:bg-instagram-900/10' : card.title.includes('Video') ? 'bg-video-50/80 dark:bg-video-900/10' : 'bg-content-50/80 dark:bg-content-900/10'}
+              progressCurrent={card.title.includes('Instagram') ? 15 : card.title.includes('Video') ? 10 : undefined}
+              progressTotal={card.title.includes('Instagram') ? 18 : card.title.includes('Video') ? 15 : undefined}
+              progressColorClass={card.title.includes('Instagram') ? 'bg-instagram-600' : 'bg-video-600'}
+              trackColorClass={'bg-gray-200/80 dark:bg-gray-700'}
               onClick={card.onClick}
             />
           </motion.div>

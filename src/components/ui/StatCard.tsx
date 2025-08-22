@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { Card } from './Card';
 import clsx from 'clsx';
 
@@ -9,7 +9,8 @@ interface StatCardProps {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   colorClass?: string;
   onClick?: () => void;
-  containerClass?: string;
+  containerClass?: string; // deprecated: use bgClass instead
+  bgClass?: string;
   progressCurrent?: number;
   progressTotal?: number;
   progressColorClass?: string; // bar color
@@ -24,6 +25,7 @@ export function StatCard({
   colorClass = 'bg-primary-500',
   onClick,
   containerClass,
+  bgClass,
   progressCurrent,
   progressTotal,
   progressColorClass = 'bg-blue-600',
@@ -32,7 +34,7 @@ export function StatCard({
   const showProgress = typeof progressCurrent === 'number' && typeof progressTotal === 'number' && progressTotal > 0;
   const percent = showProgress ? Math.min(100, Math.max(0, Math.round((progressCurrent! / progressTotal!) * 100))) : 0;
   return (
-    <Card className={clsx('cursor-pointer hover:shadow-md transition-shadow duration-200', containerClass)} onClick={onClick}>
+    <Card className={clsx('cursor-pointer hover:shadow-md transition-shadow duration-200', bgClass ?? containerClass)} onClick={onClick}>
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0 pr-4">
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{title}</p>

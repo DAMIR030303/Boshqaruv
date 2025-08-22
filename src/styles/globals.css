@@ -8,6 +8,19 @@
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
+    /* Marketing brand tokens */
+    --instagram-50: #fdf2f8;
+    --instagram-100: #fce7f3;
+    --instagram-600: #db2777;
+    --instagram-900: #831843;
+    --video-50: #eff6ff;
+    --video-100: #dbeafe;
+    --video-600: #2563eb;
+    --video-900: #1e3a8a;
+    --content-50: #ecfdf5;
+    --content-100: #d1fae5;
+    --content-600: #059669;
+    --content-900: #065f46;
     --background: #ffffff;
     --background-dark: #0b1220;
     --foreground: #0b1220;
@@ -79,6 +92,20 @@
 }
 
 @layer utilities {
+  /* brand utility colors mapped from tokens */
+  .bg-instagram-50 { background-color: var(--instagram-50); }
+  .bg-instagram-100 { background-color: var(--instagram-100); }
+  .bg-instagram-600 { background-color: var(--instagram-600); }
+  .bg-instagram-900 { background-color: var(--instagram-900); }
+  .bg-video-50 { background-color: var(--video-50); }
+  .bg-video-100 { background-color: var(--video-100); }
+  .bg-video-600 { background-color: var(--video-600); }
+  .bg-video-900 { background-color: var(--video-900); }
+  .bg-content-50 { background-color: var(--content-50); }
+  .bg-content-100 { background-color: var(--content-100); }
+  .bg-content-600 { background-color: var(--content-600); }
+  .bg-content-900 { background-color: var(--content-900); }
+
   .text-balance {
     text-wrap: balance;
   }
