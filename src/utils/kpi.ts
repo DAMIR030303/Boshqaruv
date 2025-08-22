@@ -25,13 +25,13 @@ export const createKPIUpdateHandler = (setKpiData: React.Dispatch<React.SetState
   return (data: unknown) => {
     setKpiData(prev => {
       if (!data || typeof data !== 'object') {
-        console.warn('Invalid data update received, skipping');
+        // Invalid data is silently ignored
         return prev;
       }
 
       const updated: KPIData = { ...prev };
       
-      const d: any = data as any;
+      const d = data as Partial<KPIData>;
       if (d.type) {
         switch (d.type) {
           case 'attendance_update':
@@ -48,7 +48,7 @@ export const createKPIUpdateHandler = (setKpiData: React.Dispatch<React.SetState
             (Object.keys(d) as Array<KpiSections | string>).forEach((key) => {
               if (key !== 'type' && (key as KpiSections) in updated) {
                 const section = key as KpiSections;
-                updated[section] = { ...(updated as any)[section], ...(d as any)[section] };
+                updated[section] = { ...updated[section], ...d[section] };
               }
             });
         }
@@ -56,7 +56,7 @@ export const createKPIUpdateHandler = (setKpiData: React.Dispatch<React.SetState
         (Object.keys(d) as Array<KpiSections | string>).forEach((key) => {
           if ((key as KpiSections) in updated && typeof d[key] === 'object') {
             const section = key as KpiSections;
-            updated[section] = { ...(updated as any)[section], ...d[key] };
+            updated[section] = { ...updated[section], ...(d as Record<string, any>)[key] };
           }
         });
       }
@@ -71,7 +71,7 @@ export const simulateKPIUpdates = (setKpiData: React.Dispatch<React.SetStateActi
     if (Math.random() < 0.1) {
       setKpiData(prev => {
         if (!prev?.attendance) {
-          console.warn('KPI data attendance object is missing, skipping update');
+          // Missing attendance data is ignored
           return prev;
         }
         

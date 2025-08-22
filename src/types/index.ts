@@ -113,7 +113,7 @@ export interface Report {
   id: string;
   type: 'attendance' | 'tasks' | 'performance' | 'marketing';
   title: string;
-  data: any;
+  data: Record<string, unknown>;
   generatedAt: Date;
   period: 'daily' | 'weekly' | 'monthly';
 }

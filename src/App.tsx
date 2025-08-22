@@ -43,7 +43,7 @@ function App() {
           setIsAuthenticated(true);
         }
       } catch (error) {
-        console.error('Error initializing app:', error);
+        // Error is handled silently in production
       } finally {
         setIsLoading(false);
       }
@@ -92,7 +92,7 @@ function App() {
         throw new Error('Noto\'g\'ri foydalanuvchi nomi yoki parol');
       }
     } catch (error) {
-      console.error('Login error:', error);
+      // Error is handled by throwing to caller
       throw error;
     } finally {
       setIsLoading(false);

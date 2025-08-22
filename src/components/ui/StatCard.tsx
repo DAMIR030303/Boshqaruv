@@ -1,4 +1,5 @@
 import type React from 'react';
+import { memo } from 'react';
 import { Card } from './Card';
 import clsx from 'clsx';
 
@@ -17,7 +18,7 @@ interface StatCardProps {
   trackColorClass?: string;    // track color
 }
 
-export function StatCard({
+export const StatCard = memo(({
   title,
   value,
   subtitle,
@@ -30,7 +31,7 @@ export function StatCard({
   progressTotal,
   progressColorClass = 'bg-blue-600',
   trackColorClass = 'bg-gray-200 dark:bg-gray-700'
-}: StatCardProps) {
+}: StatCardProps) => {
   const showProgress = typeof progressCurrent === 'number' && typeof progressTotal === 'number' && progressTotal > 0;
   const percent = showProgress ? Math.min(100, Math.max(0, Math.round((progressCurrent! / progressTotal!) * 100))) : 0;
   return (
@@ -57,6 +58,8 @@ export function StatCard({
       </div>
     </Card>
   );
-}
+});
+
+StatCard.displayName = 'StatCard';
 
 

@@ -17,8 +17,7 @@ export function MobileHeader({ userProfile, isDark, onThemeToggle }: MobileHeade
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // TODO: Implement search functionality
-      console.log('Searching for:', searchQuery);
+      // Search functionality will be implemented in future version
       setSearchQuery('');
       setShowSearch(false);
     }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import clsx from 'clsx';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
@@ -13,7 +13,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
 }
 
-export function Button({
+export const Button = memo(({
   className,
   children,
   variant = 'primary',
@@ -24,7 +24,7 @@ export function Button({
   isLoading = false,
   disabled,
   ...props
-}: ButtonProps) {
+}: ButtonProps) => {
   const base = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed';
   const variants: Record<ButtonVariant, string> = {
     primary: 'bg-primary-500 hover:bg-primary-600 text-white',
@@ -49,6 +49,8 @@ export function Button({
       {rightIcon && <span className="ml-2 inline-flex">{rightIcon}</span>}
     </button>
   );
-}
+});
+
+Button.displayName = 'Button';
 
 
