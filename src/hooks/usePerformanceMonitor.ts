@@ -35,7 +35,9 @@ export function usePerformanceMonitor(
     let memoryUsage: number | undefined;
     if ('memory' in performance) {
       const memory = (performance as Performance & { memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
-      memoryUsage = memory.usedJSHeapSize / 1024 / 1024; // Convert to MB
+      if (memory) {
+        memoryUsage = memory.usedJSHeapSize / 1024 / 1024; // Convert to MB
+      }
     }
 
     const metric: PerformanceMetrics = {

@@ -214,12 +214,12 @@ export const getSession = (): {
     }
     
     // Check if session expired
-    if (Date.now() > expiresAt) {
+    if (expiresAt && Date.now() > expiresAt) {
       // Try to refresh token
       const refreshToken = safeLocalStorage.getItem(SESSION_KEYS.REFRESH_TOKEN, null);
       if (refreshToken) {
         try {
-          const decoded = verifyToken(refreshToken);
+          const decoded = verifyToken<{username: string; role: string; permissions: string[]}>(refreshToken);
           const newToken = generateToken({
             username: decoded.username,
             role: decoded.role,
@@ -293,8 +293,8 @@ export const initializePasswords = async (): Promise<void> => {
     marketolog: 'marketing123'
   };
   
-  for (const [username, password] of Object.entries(passwords)) {
-    const hash = await hashPassword(password);
+  for (const [, password] of Object.entries(passwords)) {
+    await hashPassword(password);
     // In production, save to database
     // For demo, we're using the hardcoded hashes
   }

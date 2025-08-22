@@ -32,7 +32,7 @@ export const verifyPassword = async (password: string, hash: string): Promise<bo
  * Generate JWT token
  */
 export const generateToken = (payload: Record<string, unknown>, expiresIn: string = '24h'): string => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn } as any);
 };
 
 /**

@@ -1,4 +1,4 @@
-import { login, getSession, logout as logoutService } from '../services/authService';
+import { login, getSession } from '../services/authService';
 import type { LoginCredentials, UserProfile } from '../types';
 
 export const validateCredentials = async (credentials: LoginCredentials): Promise<boolean> => {
@@ -6,7 +6,7 @@ export const validateCredentials = async (credentials: LoginCredentials): Promis
   return result.success;
 };
 
-export const getUserProfile = (username: string): UserProfile => {
+export const getUserProfile = (_username?: string): UserProfile => {
   const session = getSession();
   if (session.isValid && session.user) {
     return session.user;

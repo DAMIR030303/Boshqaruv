@@ -34,19 +34,12 @@ export const ValidationSchemas = {
     .max(500, 'Vazifa tavsifi 500 ta belgidan oshmasligi kerak')
     .optional(),
   
-  taskPriority: z.enum(['low', 'medium', 'high'], {
-    errorMap: () => ({ message: 'Noto\'g\'ri vazifa muhimligi' })
-  }),
+  taskPriority: z.enum(['low', 'medium', 'high']),
   
-  taskStatus: z.enum(['pending', 'in-progress', 'completed'], {
-    errorMap: () => ({ message: 'Noto\'g\'ri vazifa holati' })
-  }),
+  taskStatus: z.enum(['pending', 'in-progress', 'completed']),
   
   // Date validation
-  date: z.date({
-    required_error: 'Sana kiritilishi shart',
-    invalid_type_error: 'Noto\'g\'ri sana formati'
-  }),
+  date: z.date(),
   
   dateRange: z.object({
     start: z.date(),
@@ -153,9 +146,9 @@ export const validateForm = <T>(
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errors: Record<string, string> = {};
-      error.errors.forEach(err => {
-        const path = err.path.join('.');
-        errors[path] = err.message;
+      error.issues.forEach(issue => {
+        const path = issue.path.join('.');
+        errors[path] = issue.message;
       });
       return { success: false, errors };
     }

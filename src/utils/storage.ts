@@ -12,9 +12,9 @@ export const safeLocalStorage = {
         return JSON.parse(item);
       } catch (parseError) {
         if (typeof item === 'string' && (item === 'true' || item === 'false')) {
-          return item === 'true';
+          return (item === 'true') as T;
         }
-        return item;
+        return item as T;
       }
     } catch (error) {
       logger.warn(`Error reading from localStorage for key "${key}"`, error);

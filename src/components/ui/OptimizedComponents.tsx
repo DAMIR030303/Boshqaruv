@@ -8,7 +8,7 @@ export function withMemo<P extends object>(
   Component: ComponentType<P>,
   areEqual?: (prevProps: P, nextProps: P) => boolean
 ): ComponentType<P> {
-  return memo(Component, areEqual);
+  return memo(Component, areEqual) as unknown as ComponentType<P>;
 }
 
 /**
@@ -35,12 +35,12 @@ interface OptimizedListProps<T> {
   overscan?: number;
 }
 
-export const OptimizedList = memo(<T,>({
+function OptimizedListComponent<T>({
   items,
   renderItem,
   keyExtractor,
   className
-}: OptimizedListProps<T>) => {
+}: OptimizedListProps<T>) {
   const renderedItems = useMemo(() => {
     return items.map((item, index) => (
       <div key={keyExtractor(item, index)}>
@@ -50,9 +50,9 @@ export const OptimizedList = memo(<T,>({
   }, [items, renderItem, keyExtractor]);
 
   return <div className={className}>{renderedItems}</div>;
-}) as <T>(props: OptimizedListProps<T>) => JSX.Element;
+}
 
-OptimizedList.displayName = 'OptimizedList';
+export const OptimizedList = memo(OptimizedListComponent) as typeof OptimizedListComponent;
 
 /**
  * Optimized image component with lazy loading

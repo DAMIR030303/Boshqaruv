@@ -28,15 +28,15 @@ function App() {
     const initializeApp = async () => {
       try {
         // Load theme preference
-        const savedTheme = safeLocalStorage.getItem(LOCAL_STORAGE_KEYS.THEME, 'light');
+        const savedTheme = safeLocalStorage.getItem<string>(LOCAL_STORAGE_KEYS.THEME, 'light');
         setIsDark(savedTheme === 'dark');
         
         // Load active tab
-        const savedTab = safeLocalStorage.getItem(LOCAL_STORAGE_KEYS.ACTIVE_TAB, 'dashboard');
-        setActiveTab(savedTab);
+        const savedTab = safeLocalStorage.getItem<string>(LOCAL_STORAGE_KEYS.ACTIVE_TAB, 'dashboard');
+        setActiveTab(savedTab || 'dashboard');
         
         // Check authentication
-        const savedAuth = safeLocalStorage.getItem(LOCAL_STORAGE_KEYS.AUTH, null);
+        const savedAuth = safeLocalStorage.getItem<{username: string; password: string}>(LOCAL_STORAGE_KEYS.AUTH, null);
         if (savedAuth && savedAuth.username) {
           const profile = getUserProfile(savedAuth.username);
           setUserProfile(profile);
