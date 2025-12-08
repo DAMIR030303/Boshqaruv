@@ -96,11 +96,11 @@ export function MobileHeader({
   return (
     <header className="app-header">
       <div className="app-header-content">
-        {/* Left side - Logo and Menu */}
-        <div className="flex items-center gap-3">
-          {/* Mobile menu button - hide on large screens with sidebar and in mobile preview */}
+        {/* Left side - Logo and Menu (Hidden on Desktop because Sidebar takes over) */}
+        <div className="flex items-center gap-3 lg:hidden">
+          {/* Mobile menu button */}
           {!isMobilePreview && (
-            <div className="relative lg:hidden">
+            <div className="relative">
               <button
                 aria-label="Menyu"
                 onClick={() => {

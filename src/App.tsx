@@ -5,10 +5,13 @@ import { Toaster } from 'sonner';
 
 import { AppRouter } from './AppRouter';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { EmployeeTabBar } from './components/mobile/EmployeeTabBar';
+import {
+  EmployeeSidebar,
+  EmployeeTabBar,
+} from './components/mobile/EmployeeTabBar';
 import { MobileHeader } from './components/mobile/MobileHeader';
 import { MobileLogin } from './components/mobile/MobileLogin';
-import { MobileTabBar } from './components/mobile/MobileTabBar';
+import { DesktopSidebar, MobileTabBar } from './components/mobile/MobileTabBar';
 import { OfflineIndicator } from './components/mobile/OfflineIndicator';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ResponsivePreview } from './components/ui/ResponsivePreview';
@@ -363,52 +366,48 @@ function App() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        {/* Header */}
-        <MobileHeader
-          userProfile={userProfile}
-          isDark={isDark}
-          onThemeToggle={toggleTheme}
-          onNavigate={handleNavigate}
-          onLogout={handleLogoutWithNavigation}
-          onResponsivePreview={() => setShowResponsivePreview(true)}
-        />
+        {/* Desktop Sidebar - Visible on lg+ screens */}
+        <div className="hidden lg:block fixed inset-y-0 left-0 z-50 w-72 border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+          {isEmployeeRole(userProfile.role) ? (
+            <EmployeeSidebar
+              activeTab={activeTab}
+              onNavigate={handleNavigate}
+              userProfile={userProfile}
+            />
+          ) : (
+            <DesktopSidebar
+              activeTab={activeTab}
+              onNavigate={handleNavigate}
+              userProfile={userProfile}
+            />
+          )}
+        </div>
 
-        {/* Offline Indicator */}
-        <OfflineIndicator />
+        {/* Header - Mobile only (logo mostly) / Desktop (actions only) */}
+        <div className="lg:pl-72 transition-all duration-200">
+          <MobileHeader
+            userProfile={userProfile}
+            isDark={isDark}
+            onThemeToggle={toggleTheme}
+            onNavigate={handleNavigate}
+            onLogout={handleLogoutWithNavigation}
+            onResponsivePreview={() => setShowResponsivePreview(true)}
+          />
 
-        {/* Main Content */}
-        <main
-          className="pt-20 pb-24"
-          style={{
-            minHeight: 'calc(100vh - 80px)',
-            backgroundColor: 'var(--bg-color, #f9fafb)',
-          }}
-        >
-          <div className="container mx-auto px-4">
-            {prefersReducedMotion ? (
-              <div key={activeTab} style={{ minHeight: '60vh' }}>
-                <AppRouter
-                  activeTab={activeTab}
-                  kpiData={kpiData}
-                  userProfile={userProfile}
-                  isDark={isDark}
-                  onDataUpdate={handleDataUpdate}
-                  onNavigate={handleNavigate}
-                  onThemeToggle={toggleTheme}
-                  onProfileUpdate={handleProfileUpdate}
-                  onLogout={handleLogoutWithNavigation}
-                />
-              </div>
-            ) : (
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: ANIMATION.DURATION_MEDIUM }}
-                  style={{ minHeight: '60vh' }}
-                >
+          {/* Offline Indicator */}
+          <OfflineIndicator />
+
+          {/* Main Content */}
+          <main
+            className="pt-20 pb-24 lg:pt-8 lg:pb-8"
+            style={{
+              minHeight: 'calc(100vh - 80px)',
+              backgroundColor: 'var(--bg-color, #f9fafb)',
+            }}
+          >
+            <div className="container mx-auto px-4 max-w-7xl">
+              {prefersReducedMotion ? (
+                <div key={activeTab} style={{ minHeight: '60vh' }}>
                   <AppRouter
                     activeTab={activeTab}
                     kpiData={kpiData}
@@ -420,11 +419,34 @@ function App() {
                     onProfileUpdate={handleProfileUpdate}
                     onLogout={handleLogoutWithNavigation}
                   />
-                </motion.div>
-              </AnimatePresence>
-            )}
-          </div>
-        </main>
+                </div>
+              ) : (
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: ANIMATION.DURATION_MEDIUM }}
+                    style={{ minHeight: '60vh' }}
+                  >
+                    <AppRouter
+                      activeTab={activeTab}
+                      kpiData={kpiData}
+                      userProfile={userProfile}
+                      isDark={isDark}
+                      onDataUpdate={handleDataUpdate}
+                      onNavigate={handleNavigate}
+                      onThemeToggle={toggleTheme}
+                      onProfileUpdate={handleProfileUpdate}
+                      onLogout={handleLogoutWithNavigation}
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+          </main>
+        </div>
 
         {/* Bottom Navigation - Hidden on desktop (lg+) via CSS */}
         {isEmployeeRole(userProfile.role) ? (
