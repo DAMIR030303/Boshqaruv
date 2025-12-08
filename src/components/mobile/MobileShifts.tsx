@@ -91,7 +91,7 @@ export function MobileShifts(_props: MobileShiftsProps) {
 
       <div className="space-y-4">
         {shifts.length === 0 ? (
-          <Card className="p-8 text-center">
+          <Card padding="lg" className="text-center">
             <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               Smenalar yo'q
@@ -105,7 +105,7 @@ export function MobileShifts(_props: MobileShiftsProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className="p-4">
+              <Card padding="md">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">

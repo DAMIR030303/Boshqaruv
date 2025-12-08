@@ -38,7 +38,7 @@ export function MobileSettings({ isDark, onThemeToggle }: MobileSettingsProps) {
 
       <div className="space-y-4">
         {/* Theme Settings */}
-        <Card className="p-4">
+        <Card padding="md">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               {isDark ? (
@@ -62,7 +62,7 @@ export function MobileSettings({ isDark, onThemeToggle }: MobileSettingsProps) {
         </Card>
 
         {/* Notifications */}
-        <Card className="p-4">
+        <Card padding="md">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
@@ -93,7 +93,7 @@ export function MobileSettings({ isDark, onThemeToggle }: MobileSettingsProps) {
         </Card>
 
         {/* Security */}
-        <Card className="p-4">
+        <Card padding="md">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Shield className="w-5 h-5 text-gray-600 dark:text-gray-400" />
@@ -113,7 +113,7 @@ export function MobileSettings({ isDark, onThemeToggle }: MobileSettingsProps) {
         </Card>
 
         {/* Offline Mode */}
-        <Card className="p-4">
+        <Card padding="md">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               {offlineMode ? (

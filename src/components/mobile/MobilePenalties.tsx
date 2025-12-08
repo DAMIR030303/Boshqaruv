@@ -94,7 +94,7 @@ export function MobilePenalties(_props: MobilePenaltiesProps) {
 
       <div className="space-y-4">
         {penalties.length === 0 ? (
-          <Card className="p-8 text-center">
+          <Card padding="lg" className="text-center">
             <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               Jarimalar yo'q
@@ -108,7 +108,7 @@ export function MobilePenalties(_props: MobilePenaltiesProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className="p-4">
+              <Card padding="md">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-2">

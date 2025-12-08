@@ -45,7 +45,7 @@ export function MobileProfile({ userProfile, onLogout }: MobileProfileProps) {
 
       <div className="space-y-4">
         {/* Profile Header */}
-        <Card className="p-6 text-center">
+        <Card padding="lg" className="text-center">
           <div className="w-24 h-24 rounded-full bg-primary-500 flex items-center justify-center mx-auto mb-4">
             <span className="text-white text-3xl font-bold">
               {userProfile.name.charAt(0)}
@@ -64,7 +64,7 @@ export function MobileProfile({ userProfile, onLogout }: MobileProfileProps) {
         </Card>
 
         {/* Profile Info */}
-        <Card className="p-4">
+        <Card padding="md">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
             Ma'lumotlar
           </h3>
@@ -101,7 +101,7 @@ export function MobileProfile({ userProfile, onLogout }: MobileProfileProps) {
         </Card>
 
         {/* Actions */}
-        <Card className="p-4">
+        <Card padding="md">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
             Amallar
           </h3>

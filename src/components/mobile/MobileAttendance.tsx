@@ -144,7 +144,7 @@ export function MobileAttendance({ onDataUpdate }: MobileAttendanceProps) {
 
       <div className="space-y-4">
         {attendance.length === 0 ? (
-          <Card className="p-8 text-center">
+          <Card padding="lg" className="text-center">
             <Clock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               Davomat yozuvlari yo'q
@@ -158,7 +158,7 @@ export function MobileAttendance({ onDataUpdate }: MobileAttendanceProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className="p-4">
+              <Card padding="md">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3 flex-1">
                     {getStatusIcon(record.status)}

@@ -13,6 +13,8 @@ import {
 import { NotificationService } from '../../services/notificationService';
 import type { UserProfile } from '../../types';
 import { isEmployeeRole } from '../../utils/auth';
+import { Avatar } from '../ui/Avatar';
+import { Logo } from '../ui/Logo';
 
 import { MenuDropdown } from './MenuDropdown';
 import { NotificationsDropdown } from './NotificationsDropdown';
@@ -125,21 +127,7 @@ export function MobileHeader({
 
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/40 hover:shadow-xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105">
-              <svg
-                className="w-5 h-5 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-            </div>
+            <Logo size="sm" />
             <div className="hidden sm:block">
               <h1 className="text-lg font-bold text-slate-900 dark:text-white">
                 Boshqaruv
@@ -262,11 +250,11 @@ export function MobileHeader({
               className="flex items-center gap-2 p-1.5 sm:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative z-50"
             >
               {/* Avatar */}
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 hover:scale-105 ring-2 ring-blue-500/20">
-                <span className="text-white text-sm font-semibold">
-                  {userProfile.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
+              <Avatar
+                name={userProfile.name}
+                size="sm"
+                className="sm:w-9 sm:h-9"
+              />
 
               {/* User info - hidden on mobile and in mobile preview mode */}
               {!isMobilePreview && (

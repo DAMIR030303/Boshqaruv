@@ -178,7 +178,7 @@ export function MobileEmployees({ onDataUpdate }: MobileEmployeesProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card className="p-4 hover:shadow-lg transition-shadow">
+              <Card padding="md" hoverable>
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-3 flex-1">
                     <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0">
