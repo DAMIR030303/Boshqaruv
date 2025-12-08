@@ -441,19 +441,28 @@
     min-height: 44px;
   }
 
+  /* Mobile-first: Katta tugmalar (Touch target 44px+) */
   .btn-sm {
-    @apply px-3 py-2 text-sm;
-    min-height: 36px;
+    @apply px-4 py-2.5 text-sm;
+    /* ~40px height */
+    @apply sm:px-4 sm:py-2 sm:text-sm;
   }
 
   .btn-md {
-    @apply px-4 py-2.5 text-sm;
-    @apply sm:px-5 sm:py-3 sm:text-base;
+    @apply px-5 py-3.5 text-base;
+    /* ~48px height (Comfortable) */
+    @apply sm:px-5 sm:py-2.5 sm:text-sm;
   }
 
   .btn-lg {
-    @apply px-6 py-3 text-base;
-    @apply sm:px-8 sm:py-4 sm:text-lg;
+    @apply px-6 py-4 text-lg font-medium;
+    /* ~56px height */
+    @apply sm:px-8 sm:py-3 sm:text-base;
+  }
+
+  /* Responsive tugma: Mobileda 100% width, Desktopda auto */
+  .btn-responsive {
+    @apply w-full sm:w-auto;
   }
 
   .btn-primary {
@@ -829,6 +838,7 @@
     0% {
       left: -100%;
     }
+
     100% {
       left: 100%;
     }
@@ -1085,18 +1095,23 @@
   .bg-instagram-50 {
     background-color: #fdf2f8;
   }
+
   .bg-instagram-600 {
     background-color: #db2777;
   }
+
   .bg-video-50 {
     background-color: #eff6ff;
   }
+
   .bg-video-600 {
     background-color: #2563eb;
   }
+
   .bg-content-50 {
     background-color: #ecfdf5;
   }
+
   .bg-content-600 {
     background-color: #059669;
   }
@@ -1139,6 +1154,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -1149,6 +1165,7 @@
     transform: translateY(10px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -1160,6 +1177,7 @@
     transform: translateY(-10px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -1171,6 +1189,7 @@
     transform: scale(0.95);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -1182,6 +1201,7 @@
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -1191,6 +1211,7 @@
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
