@@ -1,10 +1,15 @@
 import { StrictMode } from 'react';
 
+import { inject } from '@vercel/analytics';
 import { createRoot } from 'react-dom/client';
 
 import App from './App.tsx';
 import { registerServiceWorker } from './utils/pwa';
+
 import './styles/globals.css';
+
+// Initialize Vercel Web Analytics
+inject();
 
 // #region agent log
 fetch('http://127.0.0.1:7242/ingest/96756b51-bfed-4036-adea-abfaa325b2f9', {
