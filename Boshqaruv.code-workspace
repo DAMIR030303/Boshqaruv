@@ -2,10 +2,51 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "C:/Users/DAMIR/Downloads/Boshqaruv Design System Creation (Copy) (1)"
 		}
 	],
-	"settings": {}
+	"settings": {
+		// Postgres Language Server sozlamalari
+		"postgres-lsp.connection": {
+			"host": "localhost",
+			"port": 5432,
+			"database": "boshqaruv",
+			"user": "postgres",
+			"password": ""
+		},
+		// Yoki Supabase connection string ishlatish
+		// "postgres-lsp.connectionString": "postgresql://user:password@host:port/database",
+		// SQL fayllar uchun sozlamalar
+		"postgres-lsp.enable": true,
+		"postgres-lsp.trace.server": "verbose",
+		// Autocomplete sozlamalari
+		"postgres-lsp.completion.enable": true,
+		"postgres-lsp.completion.triggerCharacters": [
+			".",
+			"@"
+		],
+		// Diagnostics (xatolarni ko'rsatish)
+		"postgres-lsp.diagnostics.enable": true,
+		// Formatting
+		"postgres-lsp.formatting.enable": true,
+		// SQL fayllar uchun default formatter
+		"[sql]": {
+			"editor.defaultFormatter": "supabase.postgres-language-server",
+			"editor.formatOnSave": true
+		},
+		// Mavjud sozlamalar
+		"editor.formatOnSave": true,
+		"editor.codeActionsOnSave": {
+			"source.fixAll.eslint": "explicit"
+		},
+		"typescript.tsdk": "node_modules/typescript/lib",
+		"typescript.enablePromptUseWorkspaceTsdk": true
+	},
+	"extensions": {
+		"recommendations": [
+			"supabase.postgres-language-server",
+			"dbaeumer.vscode-eslint",
+			"esbenp.prettier-vscode",
+			"bradlc.vscode-tailwindcss"
+		]
+	}
 }

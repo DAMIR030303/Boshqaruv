@@ -1,0 +1,45 @@
+{
+  "name": "Boshqaruv - Mobil Boshqaruv Tizimi",
+  "short_name": "Boshqaruv",
+  "description": "Korporativ boshqaruv tizimi - xodimlar, vazifalar, davomat va hisobotlar",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Yangi vazifa",
+      "short_name": "Vazifa",
+      "description": "Yangi vazifa yaratish",
+      "url": "/?action=create-task",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Davomat",
+      "short_name": "Davomat",
+      "description": "Davomatni tekshirish",
+      "url": "/?action=attendance",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
+}
+

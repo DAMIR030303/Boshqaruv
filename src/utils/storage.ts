@@ -7,7 +7,7 @@ export const safeLocalStorage = {
       if (typeof window === 'undefined') return fallback;
       const item = localStorage.getItem(key);
       if (!item) return fallback;
-      
+
       try {
         return JSON.parse(item);
       } catch (parseError) {
@@ -21,11 +21,11 @@ export const safeLocalStorage = {
       return fallback;
     }
   },
-  
+
   setItem: <T = unknown>(key: string, value: T): void => {
     try {
       if (typeof window === 'undefined') return;
-      
+
       if (typeof value === 'string') {
         localStorage.setItem(key, value);
       } else {
@@ -36,10 +36,19 @@ export const safeLocalStorage = {
     }
   },
 
+  removeItem: (key: string): void => {
+    try {
+      if (typeof window === 'undefined') return;
+      localStorage.removeItem(key);
+    } catch (error) {
+      logger.warn(`Error removing localStorage key "${key}"`, error);
+    }
+  },
+
   clearAllExcept: (keysToKeep: string[]) => {
     try {
       const allKeys = Object.keys(localStorage);
-      
+
       allKeys.forEach(key => {
         if (!keysToKeep.includes(key)) {
           localStorage.removeItem(key);
@@ -48,5 +57,5 @@ export const safeLocalStorage = {
     } catch (error) {
       logger.warn('Error clearing localStorage', error);
     }
-  }
+  },
 };

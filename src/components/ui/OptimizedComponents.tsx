@@ -1,13 +1,23 @@
-import React, { memo, useMemo, useCallback } from 'react';
-import type { ReactNode, ComponentType } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { memo, useCallback, useMemo } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
 /**
  * Higher-order component for memoization with custom comparison
+ *
+ * Bu funksiya React komponentini memoizatsiya qiladi va
+ * custom comparison funksiyasi bilan optimallashtiradi.
+ *
+ * @param Component - Memoizatsiya qilinadigan komponent
+ * @param areEqual - Props'lar tengligini tekshirish funksiyasi (ixtiyoriy)
+ * @returns Memoizatsiya qilingan komponent
  */
 export function withMemo<P extends object>(
   Component: ComponentType<P>,
   areEqual?: (prevProps: P, nextProps: P) => boolean
 ): ComponentType<P> {
+  // React.memo returns MemoExoticComponent which is compatible with ComponentType
+  // Using unknown as intermediate type for safe type assertion
   return memo(Component, areEqual) as unknown as ComponentType<P>;
 }
 
@@ -39,20 +49,20 @@ function OptimizedListComponent<T>({
   items,
   renderItem,
   keyExtractor,
-  className
+  className,
 }: OptimizedListProps<T>) {
   const renderedItems = useMemo(() => {
     return items.map((item, index) => (
-      <div key={keyExtractor(item, index)}>
-        {renderItem(item, index)}
-      </div>
+      <div key={keyExtractor(item, index)}>{renderItem(item, index)}</div>
     ));
   }, [items, renderItem, keyExtractor]);
 
   return <div className={className}>{renderedItems}</div>;
 }
 
-export const OptimizedList = memo(OptimizedListComponent) as typeof OptimizedListComponent;
+export const OptimizedList = memo(
+  OptimizedListComponent
+) as typeof OptimizedListComponent;
 
 /**
  * Optimized image component with lazy loading
@@ -66,33 +76,28 @@ interface OptimizedImageProps {
   onError?: () => void;
 }
 
-export const OptimizedImage = memo<OptimizedImageProps>(({
-  src,
-  alt,
-  className,
-  loading = 'lazy',
-  onLoad,
-  onError
-}) => {
-  const handleLoad = useCallback(() => {
-    onLoad?.();
-  }, [onLoad]);
+export const OptimizedImage = memo<OptimizedImageProps>(
+  ({ src, alt, className, loading = 'lazy', onLoad, onError }) => {
+    const handleLoad = useCallback(() => {
+      onLoad?.();
+    }, [onLoad]);
 
-  const handleError = useCallback(() => {
-    onError?.();
-  }, [onError]);
+    const handleError = useCallback(() => {
+      onError?.();
+    }, [onError]);
 
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className={className}
-      loading={loading}
-      onLoad={handleLoad}
-      onError={handleError}
-    />
-  );
-});
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        loading={loading}
+        onLoad={handleLoad}
+        onError={handleError}
+      />
+    );
+  }
+);
 
 OptimizedImage.displayName = 'OptimizedImage';
 
@@ -107,30 +112,26 @@ interface OptimizedButtonProps {
   type?: 'button' | 'submit' | 'reset';
 }
 
-export const OptimizedButton = memo<OptimizedButtonProps>(({
-  children,
-  onClick,
-  disabled = false,
-  className,
-  type = 'button'
-}) => {
-  const handleClick = useCallback(() => {
-    if (!disabled) {
-      onClick?.();
-    }
-  }, [onClick, disabled]);
+export const OptimizedButton = memo<OptimizedButtonProps>(
+  ({ children, onClick, disabled = false, className, type = 'button' }) => {
+    const handleClick = useCallback(() => {
+      if (!disabled) {
+        onClick?.();
+      }
+    }, [onClick, disabled]);
 
-  return (
-    <button
-      type={type}
-      onClick={handleClick}
-      disabled={disabled}
-      className={className}
-    >
-      {children}
-    </button>
-  );
-});
+    return (
+      <button
+        type={type}
+        onClick={handleClick}
+        disabled={disabled}
+        className={className}
+      >
+        {children}
+      </button>
+    );
+  }
+);
 
 OptimizedButton.displayName = 'OptimizedButton';
 
@@ -155,29 +156,40 @@ export function useDebounce<T>(value: T, delay: number): T {
 
 /**
  * Hook for throttled callbacks
+ *
+ * Bu hook callback funksiyasini throttling qiladi,
+ * ya'ni belgilangan vaqt oralig'ida bir marta chaqirilishini ta'minlaydi.
+ *
+ * @template T - Callback funksiya turi
+ * @param callback - Throttling qilinadigan funksiya
+ * @param delay - Throttle delay (millisekundlarda)
+ * @returns Throttled funksiya
  */
-export function useThrottle<T extends (...args: any[]) => any>(
+export function useThrottle<T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay: number
 ): T {
   const lastRun = React.useRef(Date.now());
   const timeout = React.useRef<NodeJS.Timeout>();
 
-  return useCallback((...args: Parameters<T>) => {
-    const now = Date.now();
-    const timeSinceLastRun = now - lastRun.current;
+  return useCallback(
+    (...args: Parameters<T>) => {
+      const now = Date.now();
+      const timeSinceLastRun = now - lastRun.current;
 
-    if (timeSinceLastRun >= delay) {
-      callback(...args);
-      lastRun.current = now;
-    } else {
-      clearTimeout(timeout.current);
-      timeout.current = setTimeout(() => {
+      if (timeSinceLastRun >= delay) {
         callback(...args);
-        lastRun.current = Date.now();
-      }, delay - timeSinceLastRun);
-    }
-  }, [callback, delay]) as T;
+        lastRun.current = now;
+      } else {
+        clearTimeout(timeout.current);
+        timeout.current = setTimeout(() => {
+          callback(...args);
+          lastRun.current = Date.now();
+        }, delay - timeSinceLastRun);
+      }
+    },
+    [callback, delay]
+  ) as T;
 }
 
 /**

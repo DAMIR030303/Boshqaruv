@@ -1,39 +1,131 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Bell, Sun, Moon, Menu } from 'lucide-react';
-import { IconButton } from '../ui/IconButton';
+import { useEffect, useState } from 'react';
+
+import {
+  Bell,
+  ChevronDown,
+  Menu,
+  Moon,
+  Search,
+  Smartphone,
+  Sun,
+} from 'lucide-react';
+
+import { NotificationService } from '../../services/notificationService';
 import type { UserProfile } from '../../types';
+import { isEmployeeRole } from '../../utils/auth';
+
+import { MenuDropdown } from './MenuDropdown';
+import { NotificationsDropdown } from './NotificationsDropdown';
+import { ProfileDropdown } from './ProfileDropdown';
+import { RealtimeStatus } from './RealtimeStatus';
+import { SearchModal } from './SearchModal';
 
 interface MobileHeaderProps {
   userProfile: UserProfile;
   isDark: boolean;
   onThemeToggle: () => void;
+  onNavigate?: (tab: string) => void;
+  onLogout?: () => void;
+  onResponsivePreview?: () => void;
 }
 
-export function MobileHeader({ userProfile, isDark, onThemeToggle }: MobileHeaderProps) {
+/**
+ * Responsive Header komponenti
+ * - Mobile: Kompakt, hamburger menu
+ * - Tablet/Desktop: Kengaytirilgan, barcha tugmalar ko'rinadi
+ */
+export function MobileHeader({
+  userProfile,
+  isDark,
+  onThemeToggle,
+  onNavigate,
+  onLogout,
+  onResponsivePreview,
+}: MobileHeaderProps) {
   const [showSearch, setShowSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      // Search functionality will be implemented in future version
-      setSearchQuery('');
-      setShowSearch(false);
+  // Check if we're in responsive preview mode and if it's mobile size
+  const urlParams =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search)
+      : null;
+  const isPreviewMode = urlParams?.get('responsive-preview') === 'true';
+  const previewWidth = urlParams?.get('preview-width');
+  const isMobilePreview =
+    isPreviewMode && previewWidth && parseInt(previewWidth) < 768;
+
+  // O'qilmagan bildirishnomalar sonini yangilash
+  useEffect(() => {
+    const updateUnreadCount = () => {
+      const count = NotificationService.getUnreadCount();
+      setUnreadCount(count);
+    };
+
+    updateUnreadCount();
+
+    NotificationService.addListener(() => {
+      updateUnreadCount();
+    });
+
+    const interval = setInterval(updateUnreadCount, 30000);
+
+    return () => {
+      NotificationService.removeListener(updateUnreadCount);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const handleNavigate = (url: string) => {
+    const tab = url.split('/')[1] || url.replace('/', '');
+    if (onNavigate) {
+      onNavigate(tab);
     }
   };
 
+  const closeAllDropdowns = () => {
+    setShowSearch(false);
+    setShowNotifications(false);
+    setShowProfile(false);
+    setShowMenu(false);
+  };
+
   return (
-    <header className="mobile-header backdrop-blur-md bg-white/70 dark:bg-gray-900/60">
-      <div className="flex items-center justify-between">
+    <header className="app-header">
+      <div className="app-header-content">
         {/* Left side - Logo and Menu */}
-        <div className="flex items-center space-x-3">
-          <IconButton aria-label="Menyu">
-            <Menu className="w-5 h-5" />
-          </IconButton>
-          
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          {/* Mobile menu button - hide on large screens with sidebar and in mobile preview */}
+          {!isMobilePreview && (
+            <div className="relative lg:hidden">
+              <button
+                aria-label="Menyu"
+                onClick={() => {
+                  setShowMenu(!showMenu);
+                  setShowNotifications(false);
+                  setShowProfile(false);
+                  setShowSearch(false);
+                }}
+                className="btn-icon btn-ghost"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <MenuDropdown
+                isOpen={showMenu}
+                onClose={() => setShowMenu(false)}
+                onNavigate={onNavigate || (() => {})}
+                userProfile={userProfile}
+                isEmployee={isEmployeeRole(userProfile.role)}
+              />
+            </div>
+          )}
+
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 via-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/40 hover:shadow-xl hover:shadow-blue-500/50 transition-all duration-300 hover:scale-105">
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
@@ -48,78 +140,164 @@ export function MobileHeader({ userProfile, isDark, onThemeToggle }: MobileHeade
                 />
               </svg>
             </div>
-            <span className="text-lg font-bold text-gray-900 dark:text-white">
+            <div className="hidden sm:block">
+              <h1 className="text-lg font-bold text-slate-900 dark:text-white">
+                Boshqaruv
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400 -mt-0.5">
+                Boshqaruv tizimi
+              </p>
+            </div>
+            <span className="sm:hidden text-lg font-bold text-slate-900 dark:text-white">
               Boshqaruv
             </span>
           </div>
+
+          {/* Real-time Status Indicator */}
+          <RealtimeStatus />
         </div>
 
         {/* Right side - Actions */}
-        <div className="flex items-center space-x-2">
-          {/* Search Button */}
-          <IconButton aria-label="Qidirish" onClick={() => setShowSearch(!showSearch)}>
-            <Search className="w-5 h-5" />
-          </IconButton>
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Responsive Preview Button - Hidden in preview mode */}
+          {onResponsivePreview && !isPreviewMode && (
+            <button
+              aria-label="Mobil ko'rinishni ko'rish"
+              onClick={onResponsivePreview}
+              className="btn-icon btn-ghost relative z-50"
+              title="Mobil ko'rinishni ko'rish (Responsive Preview)"
+            >
+              <Smartphone className="w-5 h-5" />
+            </button>
+          )}
 
-          {/* Notifications */}
+          {/* Search Button - Hidden in mobile preview mode */}
+          {!isMobilePreview && (
+            <div className="relative">
+              <button
+                aria-label="Qidirish"
+                onClick={() => {
+                  setShowSearch(!showSearch);
+                  setShowNotifications(false);
+                  setShowProfile(false);
+                  setShowMenu(false);
+                }}
+                className="btn-icon btn-ghost relative z-50"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+              <SearchModal
+                isOpen={showSearch}
+                onClose={() => setShowSearch(false)}
+                onNavigate={handleNavigate}
+              />
+            </div>
+          )}
+
+          {/* Notifications - Hidden in mobile preview mode */}
+          {!isMobilePreview && (
+            <div className="relative">
+              <button
+                aria-label="Bildirishnomalar"
+                onClick={() => {
+                  setShowNotifications(!showNotifications);
+                  setShowProfile(false);
+                  setShowMenu(false);
+                  setShowSearch(false);
+                }}
+                className="btn-icon btn-ghost relative z-50"
+              >
+                <Bell className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 rounded-full flex items-center justify-center px-1 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </button>
+              <NotificationsDropdown
+                isOpen={showNotifications}
+                onClose={() => setShowNotifications(false)}
+                userName={userProfile.name}
+              />
+            </div>
+          )}
+
+          {/* Theme Toggle - Hidden in mobile preview mode */}
+          {!isMobilePreview && (
+            <button
+              aria-label={
+                isDark ? "Yorug'lik rejimiga o'tish" : "Qorong'u rejimga o'tish"
+              }
+              onClick={() => {
+                onThemeToggle();
+                closeAllDropdowns();
+              }}
+              className="btn-icon btn-ghost relative z-50"
+              title={
+                isDark ? "Yorug'lik rejimga o'tish" : "Qorong'u rejimga o'tish"
+              }
+            >
+              {isDark ? (
+                <Sun className="w-5 h-5 text-yellow-500 dark:text-yellow-400" />
+              ) : (
+                <Moon className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+              )}
+            </button>
+          )}
+
+          {/* Separator - visible on tablet+, hidden in mobile preview */}
+          {!isMobilePreview && (
+            <div className="hidden sm:block w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1" />
+          )}
+
+          {/* User Profile - Always visible, but simplified in preview mode */}
           <div className="relative">
-            <IconButton aria-label="Bildirishnomalar">
-              <Bell className="w-5 h-5" />
-            </IconButton>
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+            <button
+              onClick={() => {
+                setShowProfile(!showProfile);
+                setShowNotifications(false);
+                setShowMenu(false);
+                setShowSearch(false);
+              }}
+              className="flex items-center gap-2 p-1.5 sm:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative z-50"
+            >
+              {/* Avatar */}
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-300 hover:scale-105 ring-2 ring-blue-500/20">
+                <span className="text-white text-sm font-semibold">
+                  {userProfile.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+
+              {/* User info - hidden on mobile and in mobile preview mode */}
+              {!isMobilePreview && (
+                <div className="hidden md:block text-left">
+                  <p className="text-sm font-medium text-slate-900 dark:text-white leading-tight">
+                    {userProfile.name}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {userProfile.role}
+                  </p>
+                </div>
+              )}
+
+              {/* Dropdown arrow - hidden on mobile and in mobile preview mode */}
+              {!isMobilePreview && (
+                <ChevronDown className="hidden md:block w-4 h-4 text-slate-400" />
+              )}
+            </button>
+
+            {!isMobilePreview && (
+              <ProfileDropdown
+                isOpen={showProfile}
+                onClose={() => setShowProfile(false)}
+                onNavigate={onNavigate || (() => {})}
+                onLogout={onLogout || (() => {})}
+                userProfile={userProfile}
+              />
+            )}
           </div>
-
-          {/* Theme Toggle */}
-          <IconButton aria-label="Mavzuni almashtirish" onClick={onThemeToggle}>
-            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </IconButton>
-
-          {/* User Profile */}
-          <motion.div
-            className="flex items-center space-x-2 p-2 rounded-xl bg-white/70 dark:bg-gray-800/60 backdrop-blur-md hover:shadow-md transition-all duration-200 cursor-pointer"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center">
-              <span className="text-white text-sm font-medium">
-                {userProfile.name.charAt(0)}
-              </span>
-            </div>
-            <div className="hidden sm:block">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                {userProfile.name}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {userProfile.role}
-              </p>
-            </div>
-          </motion.div>
         </div>
       </div>
-
-      {/* Search Bar */}
-      <AnimatePresence>
-        {showSearch && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="mt-3"
-          >
-            <form onSubmit={handleSearch} className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Qidirish..."
-                className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
-                autoFocus
-              />
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
   );
 }

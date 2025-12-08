@@ -1,56 +1,162 @@
-import React, { memo } from 'react';
-import clsx from 'clsx';
+import React, { forwardRef, memo } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+import { clsx } from 'clsx';
+
+export type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'danger'
+  | 'success'
+  | 'warning';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
+  /** Button varianti */
+  variant?: Variant;
+  /** Button o'lchami */
   size?: ButtonSize;
+  /** To'liq kenglik */
   fullWidth?: boolean;
+  /** Chap tarafdagi icon */
   leftIcon?: React.ReactNode;
+  /** O'ng tarafdagi icon */
   rightIcon?: React.ReactNode;
+  /** Yuklanish holati */
   isLoading?: boolean;
+  /** Responsive - mobile'da to'liq kenglik */
+  responsive?: boolean;
 }
 
-export const Button = memo(({
-  className,
-  children,
-  variant = 'primary',
-  size = 'md',
-  fullWidth = false,
-  leftIcon,
-  rightIcon,
-  isLoading = false,
-  disabled,
-  ...props
-}: ButtonProps) => {
-  const base = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed';
-  const variants: Record<ButtonVariant, string> = {
-    primary: 'bg-primary-500 hover:bg-primary-600 text-white',
-    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700',
-    ghost: 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-900 dark:text-white',
-    danger: 'bg-danger-500 hover:bg-danger-600 text-white',
-  };
-  const sizes: Record<ButtonSize, string> = {
-    sm: 'px-3 py-2 text-sm',
-    md: 'px-4 py-2.5 text-sm',
-    lg: 'px-5 py-3 text-base',
-  };
+/**
+ * Responsive Button komponenti
+ * Barcha qurilmalarda to'g'ri ishlaydi
+ */
+export const Button = memo(
+  forwardRef<HTMLButtonElement, ButtonProps>(
+    (
+      {
+        className,
+        children,
+        variant = 'primary',
+        size = 'md',
+        fullWidth = false,
+        leftIcon,
+        rightIcon,
+        isLoading = false,
+        responsive = false,
+        disabled,
+        ...props
+      },
+      ref
+    ) => {
+      const variantClasses: Record<Variant, string> = {
+        primary: 'btn-primary',
+        secondary: 'btn-secondary',
+        outline: 'btn-outline',
+        ghost: 'btn-ghost',
+        danger: 'btn-danger',
+        success: 'btn-success',
+        warning: 'btn-warning',
+      };
 
-  return (
-    <button
-      className={clsx(base, variants[variant], sizes[size], fullWidth && 'w-full', className)}
-      disabled={isLoading || disabled}
-      {...props}
-    >
-      {leftIcon && <span className="mr-2 inline-flex">{leftIcon}</span>}
-      <span className={clsx(isLoading && 'opacity-80')}>{children}</span>
-      {rightIcon && <span className="ml-2 inline-flex">{rightIcon}</span>}
-    </button>
-  );
-});
+      const sizeClasses: Record<ButtonSize, string> = {
+        sm: 'btn-sm',
+        md: 'btn-md',
+        lg: 'btn-lg',
+      };
+
+      return (
+        <button
+          ref={ref}
+          className={clsx(
+            'btn',
+            variantClasses[variant],
+            sizeClasses[size],
+            fullWidth && 'w-full',
+            responsive && 'btn-responsive',
+            className
+          )}
+          disabled={isLoading || disabled}
+          {...props}
+        >
+          {/* Loading spinner */}
+          {isLoading && (
+            <svg
+              className="animate-spin -ml-1 mr-2 h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+          )}
+
+          {/* Left icon */}
+          {leftIcon && !isLoading && (
+            <span className="mr-2 -ml-1 inline-flex">{leftIcon}</span>
+          )}
+
+          {/* Button text */}
+          <span className={clsx(isLoading && 'opacity-80')}>{children}</span>
+
+          {/* Right icon */}
+          {rightIcon && (
+            <span className="ml-2 -mr-1 inline-flex">{rightIcon}</span>
+          )}
+        </button>
+      );
+    }
+  )
+);
 
 Button.displayName = 'Button';
 
+/**
+ * Icon Button komponenti
+ */
+export const IconButton = memo(
+  ({
+    className,
+    children,
+    variant = 'ghost',
+    size = 'md',
+    ...props
+  }: Omit<
+    ButtonProps,
+    'leftIcon' | 'rightIcon' | 'fullWidth' | 'responsive'
+  >) => {
+    return (
+      <button
+        className={clsx(
+          'btn-icon',
+          size === 'sm' && 'p-1',
+          size === 'md' && 'p-2',
+          size === 'lg' && 'p-3',
+          variant === 'primary' && 'btn-primary',
+          variant === 'secondary' && 'btn-secondary',
+          variant === 'ghost' && 'btn-ghost',
+          variant === 'danger' && 'btn-danger',
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
+);
 
+IconButton.displayName = 'IconButton';

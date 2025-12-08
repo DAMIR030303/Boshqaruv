@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Lock, User } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { getTranslation } from '../../i18n';
 
 interface MobileLoginProps {
   onLogin: (username: string, password: string) => Promise<void>;
@@ -14,40 +17,51 @@ export function MobileLogin({ onLogin, isLoading }: MobileLoginProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // i18n tarjimalar
+  const t = (key: string) => getTranslation(key, 'uz');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!username.trim() || !password.trim()) {
-      toast.error('Foydalanuvchi nomi va parolni kiriting');
+      toast.error(t('auth.login.errors.emptyFields'));
       return;
     }
 
     try {
       setIsSubmitting(true);
       await onLogin(username.trim(), password);
-      toast.success('Muvaffaqiyatli kirildi!');
+      toast.success(t('auth.login.success'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Kirishda xatolik yuz berdi');
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t('auth.login.errors.loginFailed');
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden bg-slate-900">
+      {/* Animated Background Blobs */}
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[120px] mix-blend-screen animate-pulse duration-3000" />
+      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-purple-600/30 rounded-full blur-[120px] mix-blend-screen animate-pulse duration-5000" />
+
       <motion.div
-        className="w-full max-w-sm"
-        initial={{ opacity: 0, y: 20 }}
+        className="w-full max-w-sm relative z-10"
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         {/* Logo and Title */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <motion.div
-            className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="w-24 h-24 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-blue-500/30 rotate-3"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 3 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 20 }}
           >
             <svg
               className="w-12 h-12 text-white"
@@ -63,112 +77,138 @@ export function MobileLogin({ onLogin, isLoading }: MobileLoginProps) {
               />
             </svg>
           </motion.div>
-          
+
           <motion.h1
-            className="text-3xl font-bold text-white mb-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/70 mb-2 tracking-tight"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            Boshqaruv
+            {t('common.appName') || 'Boshqaruv'}
           </motion.h1>
-          
+
           <motion.p
-            className="text-white/80 text-lg"
+            className="text-blue-100/60 text-lg font-medium"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            Mobil boshqaruv tizimi
+            {t('auth.login.subtitle')}
           </motion.p>
         </div>
 
-        {/* Login Form */}
-        <motion.form
-          onSubmit={handleSubmit}
-          className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20"
+        {/* Login Form Card */}
+        <motion.div
+          className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
         >
-          {/* Username Field */}
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-white/90 text-sm font-medium mb-2">
-              Foydalanuvchi nomi
-            </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
-                placeholder="Foydalanuvchi nomini kiriting"
-                disabled={isSubmitting || isLoading}
-              />
-            </div>
-          </div>
-
-          {/* Password Field */}
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-white/90 text-sm font-medium mb-2">
-              Parol
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-12 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
-                placeholder="Parolni kiriting"
-                disabled={isSubmitting || isLoading}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white/80 transition-colors duration-200"
-                disabled={isSubmitting || isLoading}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Username Field */}
+            <div className="space-y-2">
+              <label
+                htmlFor="username"
+                className="text-sm font-medium text-blue-100/80 ml-1"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <motion.button
-            type="submit"
-            className="w-full bg-white text-primary-600 font-semibold py-3 px-6 rounded-lg hover:bg-white/90 active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isSubmitting || isLoading}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {isSubmitting ? (
-              <div className="flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mr-2"></div>
-                Kirilmoqda...
+                {t('auth.login.username')}
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <User className="h-5 w-5 text-blue-300/50 group-focus-within:text-blue-400 transition-colors" />
+                </div>
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3.5 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-blue-100/30 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                  placeholder={t('auth.login.username')}
+                  disabled={isSubmitting || isLoading}
+                />
               </div>
-            ) : (
-              'Kirish'
-            )}
-          </motion.button>
-        </motion.form>
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-2">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-blue-100/80 ml-1"
+              >
+                {t('auth.login.password')}
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-blue-300/50 group-focus-within:text-blue-400 transition-colors" />
+                </div>
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className="w-full pl-11 pr-12 py-3.5 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-blue-100/30 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                  placeholder={t('auth.login.password')}
+                  disabled={isSubmitting || isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-blue-100/40 hover:text-blue-100/80 transition-colors rounded-lg hover:bg-white/5"
+                  disabled={isSubmitting || isLoading}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <motion.button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 active:scale-[0.98] transition-all duration-200 relative overflow-hidden group mt-2"
+              disabled={isSubmitting || isLoading}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <div className="relative flex items-center justify-center">
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                    <span>{t('common.loading')}</span>
+                  </>
+                ) : (
+                  <span>{t('auth.login.submit')}</span>
+                )}
+              </div>
+            </motion.button>
+          </form>
+        </motion.div>
 
         {/* Demo Credentials */}
         <motion.div
-          className="mt-6 text-center"
+          className="mt-8 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7 }}
         >
-          <p className="text-white/60 text-sm mb-2">Demo hisoblar:</p>
-          <div className="space-y-1 text-xs text-white/50">
-            <p>Admin: admin / admin123</p>
-            <p>Manager: manager / manager123</p>
-            <p>Marketing: marketolog / marketing123</p>
-            <p>Xodim: user / user123</p>
+          <div className="inline-flex flex-col items-center bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/5 mx-auto max-w-xs w-full">
+            <p className="text-blue-100/60 text-xs font-semibold uppercase tracking-wider mb-3">
+              Demo hisoblar
+            </p>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-blue-100/50 w-full">
+              <div className="text-right">Admin:</div>
+              <div className="text-left font-mono text-blue-100/80">
+                admin / admin123
+              </div>
+              <div className="text-right">Manager:</div>
+              <div className="text-left font-mono text-blue-100/80">
+                manager / manager123
+              </div>
+            </div>
           </div>
         </motion.div>
       </motion.div>

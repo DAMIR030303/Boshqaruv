@@ -1,0 +1,196 @@
+{
+  "common": {
+    "appName": "Boshqaruv",
+    "loading": "Yuklanmoqda...",
+    "error": "Xatolik",
+    "success": "Muvaffaqiyatli",
+    "cancel": "Bekor qilish",
+    "save": "Saqlash",
+    "delete": "O'chirish",
+    "edit": "Tahrirlash",
+    "search": "Qidirish",
+    "filter": "Filtrlash",
+    "refresh": "Yangilash",
+    "close": "Yopish",
+    "retry": "Qayta urinish",
+    "home": "Bosh sahifa",
+    "newTask": "Yangi vazifa"
+  },
+  "auth": {
+    "login": {
+      "title": "Boshqaruv tizimiga kirish",
+      "subtitle": "Foydalanuvchi nomi va parolingizni kiriting",
+      "username": "Foydalanuvchi nomi",
+      "password": "Parol",
+      "showPassword": "Parolni ko'rsatish",
+      "hidePassword": "Parolni yashirish",
+      "submit": "Kirish",
+      "forgotPassword": "Parolni unutdingizmi?",
+      "errors": {
+        "emptyFields": "Foydalanuvchi nomi va parolni kiriting",
+        "invalidCredentials": "Noto'g'ri foydalanuvchi nomi yoki parol",
+        "loginFailed": "Kirishda xatolik yuz berdi",
+        "tooManyAttempts": "Juda ko'p muvaffaqiyatsiz urinishlar. 15 daqiqadan so'ng qayta urinib ko'ring."
+      },
+      "success": "Muvaffaqiyatli kirildi!"
+    },
+    "logout": {
+      "title": "Chiqish",
+      "confirm": "Tizimdan chiqmoqchimisiz?",
+      "success": "Muvaffaqiyatli chiqildi"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Xush kelibsiz",
+    "welcomeAdmin": "Bugungi ishlarni ko'rib chiqing va boshqaring",
+    "welcomeEmployee": "Bugungi ishlarni ko'rib chiqing",
+    "welcomeMarketing": "Marketing vazifalarini boshqaring",
+    "todaySummary": "Bugungi xulosa",
+    "todayTasks": "Bugungi vazifalar",
+    "todayStatus": "Bugungi holat",
+    "kpi": {
+      "attendance": "Davomat",
+      "tasks": "Vazifalar",
+      "penalties": "Jarimalar",
+      "reports": "Hisobotlar",
+      "late": "kechikkan",
+      "pending": "kutilayotgan",
+      "resolved": "hal qilingan",
+      "present": "Kelgan",
+      "absent": "Kelmagan"
+    },
+    "employee": {
+      "todayTasks": "Bugungi vazifalar",
+      "attendanceStatus": "Davomat holati",
+      "arrivalTime": "Kelish vaqti",
+      "tasks": "Vazifalar"
+    },
+    "marketing": {
+      "instagramPosts": "Instagram postlar",
+      "videoEditing": "Video montaj",
+      "contentMonitoring": "Kontent monitoring",
+      "active": "Aktiv",
+      "realtime": "Real vaqtda"
+    },
+    "quickActions": {
+      "tasks": "Vazifalar",
+      "attendance": "Davomat",
+      "reports": "Hisobot"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "employees": "Xodimlar",
+    "tasks": "Vazifalar",
+    "attendance": "Davomat",
+    "shifts": "Smenalar",
+    "penalties": "Jarimalar",
+    "reports": "Hisobotlar",
+    "settings": "Sozlamalar",
+    "profile": "Profil"
+  },
+  "errors": {
+    "404": {
+      "title": "Sahifa topilmadi",
+      "description": "Siz qidirayotgan sahifa mavjud emas yoki o'chirilgan.",
+      "backHome": "Bosh sahifaga qaytish"
+    },
+    "500": {
+      "title": "Server xatosi",
+      "description": "Serverda xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.",
+      "retry": "Qayta urinish"
+    },
+    "generic": {
+      "title": "Xatolik yuz berdi",
+      "description": "Kechirasiz, ilovada kutilmagan xatolik yuz berdi. Iltimos, qayta urinib ko'ring.",
+      "retry": "Qayta urinish",
+      "refresh": "Sahifani yangilash"
+    },
+    "network": {
+      "title": "Internet aloqasi yo'q",
+      "description": "Internet aloqasini tekshiring va qayta urinib ko'ring."
+    }
+  },
+  "loading": {
+    "app": "Boshqaruv yuklanmoqda...",
+    "profile": "Profil ma'lumotlari yuklanmoqda...",
+    "dashboard": "Dashboard yuklanmoqda...",
+    "employees": "Xodimlar ma'lumotlari yuklanmoqda...",
+    "tasks": "Vazifalar yuklanmoqda...",
+    "attendance": "Davomat ma'lumotlari yuklanmoqda...",
+    "shifts": "Smenalar yuklanmoqda...",
+    "penalties": "Jarimalar yuklanmoqda...",
+    "reports": "Hisobotlar yuklanmoqda...",
+    "settings": "Sozlamalar yuklanmoqda...",
+    "saving": "Saqlanmoqda..."
+  },
+  "meetings": {
+    "title": "Uchrashuvlar",
+    "new": "Yangi",
+    "start": "Boshlash",
+    "status": {
+      "completed": "Tugallangan",
+      "inProgress": "Jarayonda",
+      "cancelled": "Bekor qilingan",
+      "past": "O'tgan",
+      "today": "Bugun",
+      "soon": "Tez orada",
+      "scheduled": "Rejalashtirilgan"
+    },
+    "noMeetings": "Uchrashuvlar mavjud emas",
+    "participants": "ishtirokchi",
+    "videoConference": "Video konferensiya mavjud",
+    "deleteConfirm": "Bu uchrashuvni o'chirishni xohlaysizmi?",
+    "deleteSuccess": "Uchrashuv o'chirildi",
+    "deleteError": "Uchrashuv o'chirishda xatolik",
+    "loadError": "Uchrashuvlarni yuklashda xatolik"
+  },
+  "calendar": {
+    "today": "Bugun"
+  },
+  "deadlines": {
+    "today": "Bugun"
+  },
+  "attendance": {
+    "title": "Davomat",
+    "today": "Bugun:",
+    "employees": "xodim",
+    "loading": "Davomat yuklanmoqda...",
+    "checkInSuccess": "Check-in muvaffaqiyatli amalga oshirildi",
+    "checkOutSuccess": "Check-out muvaffaqiyatli amalga oshirildi",
+    "checkInError": "Check-in qilishda xatolik",
+    "checkOutError": "Check-out qilishda xatolik",
+    "loadError": "Davomat yozuvlarini yuklashda xatolik"
+  },
+  "form": {
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "select": "Tanlang...",
+    "saving": "Saqlanmoqda..."
+  },
+  "errors": {
+    "404": {
+      "title": "Sahifa topilmadi",
+      "description": "Siz qidirayotgan sahifa mavjud emas yoki o'chirilgan.",
+      "backHome": "Bosh sahifaga qaytish"
+    },
+    "500": {
+      "title": "Server xatosi",
+      "description": "Serverda xatolik yuz berdi. Iltimos, keyinroq qayta urinib ko'ring.",
+      "retry": "Qayta urinish"
+    },
+    "generic": {
+      "title": "Xatolik yuz berdi",
+      "description": "Kechirasiz, ilovada kutilmagan xatolik yuz berdi. Iltimos, qayta urinib ko'ring.",
+      "descriptionWithError": "Kechirasiz, ilovada xatolik yuz berdi: {error}",
+      "retry": "Qayta urinish",
+      "refresh": "Sahifani yangilash",
+      "details": "Xatolik tafsilotlari (Development)"
+    },
+    "network": {
+      "title": "Internet aloqasi yo'q",
+      "description": "Internet aloqasini tekshiring va qayta urinib ko'ring."
+    }
+  }
+}

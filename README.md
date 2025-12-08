@@ -2,8 +2,11 @@
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/yourusername/boshqaruv)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![CI](https://github.com/yourusername/boshqaruv/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/boshqaruv/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/yourusername/boshqaruv)
 [![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)](https://github.com/yourusername/boshqaruv)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.2-blue.svg)](https://reactjs.org/)
 
 ## 📱 Dastur Haqida
 
@@ -21,6 +24,7 @@
 
 - 🔐 **Role-based Authentication** - 4 xil foydalanuvchi roli
 - 📊 **Real-time KPI Monitoring** - Davomat, vazifalar va jarimalar statistikasi
+- ⚡ **Supabase Real-time** - Barcha jadvallar real-time rejimda ishlaydi (yashil/qizil status ko'rsatkich)
 - 🎨 **Dark/Light Theme** - Foydalanuvchi xohishiga ko'ra tema o'zgartirish
 - 📱 **Mobile-First Design** - Barcha qurilmalarda optimallashtirilgan
 - 🌐 **O'zbek tili** - To'liq o'zbek tilida interfeys
@@ -63,6 +67,12 @@
 - **Forms:** React Hook Form + Zod
 - **Notifications:** Sonner
 - **Build Tool:** Vite
+
+### Backend & Database
+- **Database:** Supabase (PostgreSQL)
+- **Real-time:** Supabase Realtime (WebSocket)
+- **Authentication:** Supabase Auth + JWT
+- **Status Indicator:** Header'da yashil/qizil real-time status ko'rsatkich
 
 ### Development Tools
 - **Linting:** ESLint + Prettier
@@ -122,36 +132,66 @@ Eslatma: Dev server hozir 3000-portda ishlaydi. Portni o‘zgartirish uchun `vit
 ## 🛠️ O'rnatish va Ishlatish
 
 ### Talablar
-- Node.js 18+ 
-- npm yoki yarn
+- Node.js 20+
+- pnpm 10+ (Corepack orqali avtomatik o'rnatiladi)
 
 ### O'rnatish
 ```bash
+# Corepack ni yoqish (Node.js 20+ bilan keladi)
+corepack enable
+
 # Dependencies o'rnatish
-npm install
+pnpm install
 
 # Development server ishga tushirish
-npm run dev
+pnpm dev
 
 # Server default port: 3000 (vite.config.ts → server.port)
 # Portni vaqtinchalik o'zgartirish:
-# npm run dev -- --port 4000
+# pnpm dev -- --port 4000
 
 # Production build
-npm run build
+pnpm build
+
+# Type checking
+pnpm typecheck
 
 # Linting
-npm run lint
+pnpm lint
+
+# Formatting
+pnpm format
+
+# Format check
+pnpm format:check
 ```
 
 ### Development
 ```bash
 # Development server
-npm run dev
+pnpm dev
 
 # Build preview
-npm run preview
+pnpm preview
+
+# Testlar
+pnpm test
+
+# Test coverage
+pnpm test:coverage
+
+# Test UI
+pnpm test:ui
 ```
+
+### Development Workflow
+1. **Branch yaratish:** `git checkout -b feature/feature-name`
+2. **Kod yozish:** O'zgarishlarni qiling
+3. **Pre-commit hook:** Avtomatik format check, lint va test ishlaydi
+4. **Commit:** `git commit -m "feat: add feature"`
+5. **Push:** `git push origin feature/feature-name`
+6. **CI/CD:** GitHub Actions avtomatik tekshiradi (typecheck, lint, format, test)
+7. **Pull Request:** PR yarating va review kutib turing
 
 ## 🔧 Konfiguratsiya
 
@@ -171,34 +211,103 @@ Tailwind CSS v4 beta ishlatilmoqda. Custom design tokens va responsive breakpoin
 - **Touch-friendly:** 44px minimum touch targets
 - **Responsive:** Barcha screen size'lar uchun
 - **Performance:** Code splitting va lazy loading
-- **PWA Ready:** Service worker va manifest
+- **PWA Support:** 
+  - ✅ Service Worker (offline support)
+  - ✅ Web App Manifest
+  - ✅ iOS meta tags
+  - ✅ Add to Home Screen
+  - ✅ Offline indicator
+  - ✅ Pull-to-refresh (ready to use)
+- **Mobile Features:**
+  - Safe area insets support (notch, home indicator)
+  - Touch-optimized interactions
+  - Smooth scrolling
+  - Prevent zoom on input focus (iOS)
+  - Viewport-fit=cover support
+
+## 🤖 Android APK Build
+
+### Tez Start
+
+```bash
+# 1. Build web app
+pnpm build
+
+# 2. Android'ga sync
+pnpm android:build
+
+# 3. Android Studio'da ochish
+pnpm android:open
+
+# 4. APK build (Android Studio'da)
+# Build > Build Bundle(s) / APK(s) > Build APK(s)
+```
+
+### Command Line
+
+```bash
+# Debug APK
+cd android && ./gradlew assembleDebug
+
+# APK joylashuvi:
+# android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Batafsil: [ANDROID_BUILD_GUIDE.md](ANDROID_BUILD_GUIDE.md) yoki [QUICK_APK_BUILD.md](QUICK_APK_BUILD.md)
 
 ## 🧪 Testing
 
+Loyiha **Vitest** ishlatadi (web app uchun to'g'ri tanlov). Jest React Native uchun, lekin bu web app.
+
 ```bash
 # Unit tests
-npm run test
+pnpm test
 
-# E2E tests
-npm run test:e2e
+# Testlar (run mode)
+pnpm test --run
+
+# Test UI
+pnpm test:ui
 
 # Coverage
-npm run test:coverage
+pnpm test:coverage
 ```
+
+**Test konfiguratsiyasi:** `vitest.config.ts` - jsdom environment, coverage v8 provider, TypeScript support.
 
 ## 🚀 Deployment
 
 ### Vercel
 ```bash
-npm run build
+pnpm build
 vercel --prod
 ```
 
 ### Netlify
 ```bash
-npm run build
+pnpm build
 netlify deploy --prod --dir=dist
 ```
+
+## 🔄 CI/CD
+
+Loyiha **GitHub Actions** bilan CI/CD sozlangan:
+
+- **Workflow:** `.github/workflows/ci.yml`
+- **Trigger:** Push va Pull Request (main, develop branchlar)
+- **Steps:**
+  1. Checkout code
+  2. Setup pnpm
+  3. Setup Node.js 20
+  4. Install dependencies
+  5. Type check (`pnpm typecheck`)
+  6. Lint (`pnpm lint`)
+  7. Format check (`pnpm format:check`)
+  8. Run tests (`pnpm test --run`)
+
+**Git Hooks (Husky):**
+- **Pre-commit:** Format check, lint va test
+- **Pre-push:** Type check, lint va test
 
 ## 📊 Performance Metrikalari
 
@@ -224,11 +333,44 @@ netlify deploy --prod --dir=dist
 
 ## 🤝 Hissa Qo'shish
 
-1. Repository'ni fork qiling
-2. Feature branch yarating (`git checkout -b feature/amazing-feature`)
-3. O'zgarishlarni commit qiling (`git commit -m 'Add amazing feature'`)
-4. Branch'ni push qiling (`git push origin feature/amazing-feature`)
-5. Pull Request yarating
+### Contributing Guidelines
+
+1. **Repository'ni fork qiling**
+2. **Feature branch yarating:**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **Kod yozing va formatlang:**
+   ```bash
+   pnpm format
+   pnpm lint
+   pnpm typecheck
+   ```
+4. **Testlarni ishga tushiring:**
+   ```bash
+   pnpm test --run
+   ```
+5. **O'zgarishlarni commit qiling:**
+   ```bash
+   git commit -m "feat: add amazing feature"
+   ```
+   - Pre-commit hook avtomatik format check, lint va test ishlaydi
+6. **Branch'ni push qiling:**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+7. **Pull Request yarating**
+   - CI/CD avtomatik tekshiradi
+   - Code review kutib turing
+
+### Commit Message Format
+- `feat:` - Yangi xususiyat
+- `fix:` - Xatolik tuzatish
+- `docs:` - Dokumentatsiya
+- `style:` - Formatting
+- `refactor:` - Refactoring
+- `test:` - Testlar
+- `chore:` - Build, config o'zgarishlari
 
 ## 📝 Litsenziya
 

@@ -1,0 +1,195 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "close": "Close",
+    "retry": "Retry",
+    "home": "Home",
+    "newTask": "New Task"
+  },
+  "auth": {
+    "login": {
+      "title": "Login to Management System",
+      "subtitle": "Enter your username and password",
+      "username": "Username",
+      "password": "Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "submit": "Login",
+      "forgotPassword": "Forgot password?",
+      "errors": {
+        "emptyFields": "Please enter username and password",
+        "invalidCredentials": "Invalid username or password",
+        "loginFailed": "Login failed",
+        "tooManyAttempts": "Too many failed attempts. Please try again after 15 minutes."
+      },
+      "success": "Successfully logged in!"
+    },
+    "logout": {
+      "title": "Logout",
+      "confirm": "Are you sure you want to logout?",
+      "success": "Successfully logged out"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome",
+    "welcomeAdmin": "Review and manage today's work",
+    "welcomeEmployee": "Review today's work",
+    "welcomeMarketing": "Manage marketing tasks",
+    "todaySummary": "Today's Summary",
+    "todayTasks": "Today's Tasks",
+    "todayStatus": "Today's Status",
+    "kpi": {
+      "attendance": "Attendance",
+      "tasks": "Tasks",
+      "penalties": "Penalties",
+      "reports": "Reports",
+      "late": "late",
+      "pending": "pending",
+      "resolved": "resolved",
+      "present": "Present",
+      "absent": "Absent"
+    },
+    "employee": {
+      "todayTasks": "Today's Tasks",
+      "attendanceStatus": "Attendance Status",
+      "arrivalTime": "Arrival Time",
+      "tasks": "Tasks"
+    },
+    "marketing": {
+      "instagramPosts": "Instagram Posts",
+      "videoEditing": "Video Editing",
+      "contentMonitoring": "Content Monitoring",
+      "active": "Active",
+      "realtime": "Real-time"
+    },
+    "quickActions": {
+      "tasks": "Tasks",
+      "attendance": "Attendance",
+      "reports": "Reports"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "employees": "Employees",
+    "tasks": "Tasks",
+    "attendance": "Attendance",
+    "shifts": "Shifts",
+    "penalties": "Penalties",
+    "reports": "Reports",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
+  "errors": {
+    "404": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for does not exist or has been removed.",
+      "backHome": "Back to Home"
+    },
+    "500": {
+      "title": "Server Error",
+      "description": "An error occurred on the server. Please try again later.",
+      "retry": "Retry"
+    },
+    "generic": {
+      "title": "An Error Occurred",
+      "description": "Sorry, an unexpected error occurred in the application. Please try again.",
+      "retry": "Retry",
+      "refresh": "Refresh Page"
+    },
+    "network": {
+      "title": "No Internet Connection",
+      "description": "Please check your internet connection and try again."
+    }
+  },
+  "loading": {
+    "app": "Loading Boshqaruv...",
+    "profile": "Loading profile information...",
+    "dashboard": "Loading dashboard...",
+    "employees": "Loading employees data...",
+    "tasks": "Loading tasks...",
+    "attendance": "Loading attendance data...",
+    "shifts": "Loading shifts...",
+    "penalties": "Loading penalties...",
+    "reports": "Loading reports...",
+    "settings": "Loading settings...",
+    "saving": "Saving..."
+  },
+  "meetings": {
+    "title": "Meetings",
+    "new": "New",
+    "start": "Start",
+    "status": {
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "cancelled": "Cancelled",
+      "past": "Past",
+      "today": "Today",
+      "soon": "Soon",
+      "scheduled": "Scheduled"
+    },
+    "noMeetings": "No meetings available",
+    "participants": "participants",
+    "videoConference": "Video conference available",
+    "deleteConfirm": "Are you sure you want to delete this meeting?",
+    "deleteSuccess": "Meeting deleted",
+    "deleteError": "Error deleting meeting",
+    "loadError": "Error loading meetings"
+  },
+  "calendar": {
+    "today": "Today"
+  },
+  "deadlines": {
+    "today": "Today"
+  },
+  "attendance": {
+    "title": "Attendance",
+    "today": "Today:",
+    "employees": "employees",
+    "loading": "Loading attendance...",
+    "checkInSuccess": "Check-in successful",
+    "checkOutSuccess": "Check-out successful",
+    "checkInError": "Error checking in",
+    "checkOutError": "Error checking out",
+    "loadError": "Error loading attendance records"
+  },
+  "form": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "select": "Select...",
+    "saving": "Saving..."
+  },
+  "errors": {
+    "404": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for does not exist or has been removed.",
+      "backHome": "Back to Home"
+    },
+    "500": {
+      "title": "Server Error",
+      "description": "An error occurred on the server. Please try again later.",
+      "retry": "Retry"
+    },
+    "generic": {
+      "title": "An Error Occurred",
+      "description": "Sorry, an unexpected error occurred in the application. Please try again.",
+      "descriptionWithError": "Sorry, an error occurred in the application: {error}",
+      "retry": "Retry",
+      "refresh": "Refresh Page",
+      "details": "Error Details (Development)"
+    },
+    "network": {
+      "title": "No Internet Connection",
+      "description": "Please check your internet connection and try again."
+    }
+  }
+}

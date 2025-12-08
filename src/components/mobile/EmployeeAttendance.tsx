@@ -1,6 +1,6 @@
-// import React from 'react';
-import { PlaceholderComponent } from './PlaceholderComponent';
 import type { KPIData, UserProfile } from '../../types';
+
+import { PlaceholderComponent } from './PlaceholderComponent';
 
 interface EmployeeAttendanceProps {
   kpiData: KPIData;

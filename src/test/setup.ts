@@ -1,4 +1,6 @@
 import '@testing-library/jest-dom';
+import { webcrypto as nodeWebCrypto } from 'node:crypto';
+
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 
@@ -35,15 +37,28 @@ const localStorageMock = {
   setItem: vi.fn(),
   removeItem: vi.fn(),
   clear: vi.fn(),
+  length: 0,
+  key: vi.fn(),
 };
-global.localStorage = localStorageMock as any;
+global.localStorage = localStorageMock as Storage;
 
 // Mock crypto
-global.crypto = {
-  getRandomValues: (arr: any) => {
-    for (let i = 0; i < arr.length; i++) {
-      arr[i] = Math.floor(Math.random() * 256);
+const fallbackCrypto = globalThis.crypto ?? nodeWebCrypto ?? {};
+
+const mockCrypto: Partial<Crypto> = {
+  getRandomValues: <T extends ArrayBufferView | null>(arr: T): T => {
+    if (arr instanceof Uint8Array) {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i] = Math.floor(Math.random() * 256);
+      }
     }
     return arr;
   },
-} as any;
+  randomUUID: () => fallbackCrypto.randomUUID?.() ?? '',
+  subtle: (fallbackCrypto.subtle ?? {}) as SubtleCrypto,
+};
+
+Object.defineProperty(globalThis, 'crypto', {
+  configurable: true,
+  value: mockCrypto as Crypto,
+});

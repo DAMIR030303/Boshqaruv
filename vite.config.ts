@@ -1,6 +1,7 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
 import path from 'path'
+
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [react()],
@@ -9,6 +10,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  define: {
+    global: 'globalThis',
+  },
+  publicDir: 'public',
   server: {
     port: 3000,
     host: true
@@ -18,9 +23,10 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: false, // Keep console for Android WebView debugging
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+        // Keep console.error and console.warn for error tracking
+        pure_funcs: ['console.trace'], // Only remove trace
       },
     },
     // Split vendor chunks
@@ -49,7 +55,7 @@ export default defineConfig({
   },
   // Optimize dependencies
   optimizeDeps: {
-    include: ['react', 'react-dom', 'framer-motion'],
-    exclude: ['@supabase/supabase-js'],
+    include: ['react', 'react-dom', 'framer-motion', '@supabase/supabase-js'],
+    exclude: [],
   },
 })

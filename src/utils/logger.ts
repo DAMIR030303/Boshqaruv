@@ -2,6 +2,8 @@
  * Production-ready logging utility
  */
 
+import { safeLocalStorage } from './storage';
+
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 interface LogEntry {
@@ -22,7 +24,7 @@ class Logger {
       level,
       message,
       timestamp: new Date().toISOString(),
-      data
+      data,
     };
 
     // Add to buffer for error reporting
@@ -33,7 +35,8 @@ class Logger {
 
     // Only log to console in development
     if (this.isDevelopment) {
-      const consoleMethod = level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log';
+      const consoleMethod =
+        level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log';
       console[consoleMethod](`[${level.toUpperCase()}]`, message, data || '');
     }
 
@@ -61,7 +64,7 @@ class Logger {
       message,
       timestamp: new Date().toISOString(),
       data: error,
-      stack: error instanceof Error ? error.stack : undefined
+      stack: error instanceof Error ? error.stack : undefined,
     };
 
     this.logBuffer.push(entry);
@@ -88,16 +91,16 @@ class Logger {
     // In production, send to error tracking service like Sentry
     // For now, store in localStorage for debugging
     try {
-      const errorLogs = localStorage.getItem('boshqaruv-error-logs');
-      const logs = errorLogs ? JSON.parse(errorLogs) : [];
+      const logs =
+        safeLocalStorage.getItem<LogEntry[]>('boshqaruv-error-logs', []) ?? [];
       logs.push(entry);
-      
+
       // Keep only last 50 errors
       if (logs.length > 50) {
         logs.splice(0, logs.length - 50);
       }
-      
-      localStorage.setItem('boshqaruv-error-logs', JSON.stringify(logs));
+
+      safeLocalStorage.setItem('boshqaruv-error-logs', logs);
     } catch {
       // Silently fail if localStorage is full
     }

@@ -1,4 +1,6 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+
+import { logger } from '../utils/logger';
 
 interface PerformanceMetrics {
   renderTime: number;
@@ -27,14 +29,18 @@ export function usePerformanceMonitor(
 
   const endRender = useCallback(() => {
     if (!enabled) return;
-    
+
     const renderTime = performance.now() - renderStartTime.current;
     const timestamp = Date.now();
-    
+
     // Get memory usage if available
     let memoryUsage: number | undefined;
     if ('memory' in performance) {
-      const memory = (performance as Performance & { memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number } }).memory;
+      const memory = (
+        performance as Performance & {
+          memory?: { usedJSHeapSize: number; jsHeapSizeLimit: number };
+        }
+      ).memory;
       if (memory) {
         memoryUsage = memory.usedJSHeapSize / 1024 / 1024; // Convert to MB
       }
@@ -55,11 +61,9 @@ export function usePerformanceMonitor(
 
     // Log slow renders
     if (renderTime > threshold && logToConsole) {
-      if (import.meta.env.VITE_APP_ENV === 'development') {
-        console.warn(
-          `Slow render detected in ${componentName}: ${renderTime.toFixed(2)}ms (threshold: ${threshold}ms)`
-        );
-      }
+      logger.warn(
+        `Slow render detected in ${componentName}: ${renderTime.toFixed(2)}ms (threshold: ${threshold}ms)`
+      );
     }
 
     return metric;
@@ -69,9 +73,11 @@ export function usePerformanceMonitor(
     return {
       current: metrics.current[metrics.current.length - 1],
       history: [...metrics.current],
-      average: metrics.current.length > 0 
-        ? metrics.current.reduce((sum, m) => sum + m.renderTime, 0) / metrics.current.length 
-        : 0,
+      average:
+        metrics.current.length > 0
+          ? metrics.current.reduce((sum, m) => sum + m.renderTime, 0) /
+            metrics.current.length
+          : 0,
       slowRenders: metrics.current.filter(m => m.renderTime > threshold).length,
     };
   }, [threshold]);

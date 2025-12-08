@@ -1,36 +1,51 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+
+import { clsx } from 'clsx';
 
 interface QuickActionProps {
   title: string;
   subtitle?: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  colorClass?: string; // e.g. 'bg-blue-500'
+  colorClass?: string;
   onClick?: () => void;
 }
 
-export function QuickAction({ title, subtitle, icon: Icon, colorClass = 'bg-primary-500', onClick }: QuickActionProps) {
+/**
+ * Responsive Quick Action komponenti
+ * Tezkor amallar uchun tugma
+ */
+export function QuickAction({
+  title,
+  subtitle,
+  icon: Icon,
+  colorClass = 'bg-blue-600',
+  onClick,
+}: QuickActionProps) {
   return (
-    <motion.button
-      onClick={onClick}
-      className="w-full text-left"
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
-    >
-      <div className="w-full bg-white/70 dark:bg-gray-800/60 backdrop-blur-md border border-gray-200/70 dark:border-gray-700/60 rounded-2xl px-4 py-3 flex items-center shadow-md active:scale-95 transition-all duration-150">
-        <div className={`w-10 h-10 ${colorClass} rounded-full flex items-center justify-center text-white mr-3`}
-             aria-hidden>
-          <Icon className="w-5 h-5" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{title}</p>
-          {subtitle && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{subtitle}</p>
-          )}
-        </div>
+    <button onClick={onClick} className="quick-action w-full text-left">
+      <div className={clsx('quick-action-icon', colorClass)}>
+        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
       </div>
-    </motion.button>
+
+      <div className="quick-action-content">
+        <p className="quick-action-title">{title}</p>
+        {subtitle && <p className="quick-action-subtitle">{subtitle}</p>}
+      </div>
+
+      {/* Arrow indicator */}
+      <svg
+        className="w-5 h-5 text-slate-400 flex-shrink-0"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 5l7 7-7 7"
+        />
+      </svg>
+    </button>
   );
 }
-
-

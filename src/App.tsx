@@ -1,125 +1,101 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Toaster } from 'sonner';
-import { ErrorBoundary } from './components/ErrorBoundary';
+
 import { AppRouter } from './AppRouter';
-import { MobileLogin } from './components/mobile/MobileLogin';
-import { MobileHeader } from './components/mobile/MobileHeader';
-import { MobileTabBar } from './components/mobile/MobileTabBar';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { EmployeeTabBar } from './components/mobile/EmployeeTabBar';
-import { safeLocalStorage } from './utils/storage';
-import { DEFAULT_KPI_DATA, LOCAL_STORAGE_KEYS } from './constants/app';
-import { validateCredentials, getUserProfile, isEmployeeRole } from './utils/auth';
+import { MobileHeader } from './components/mobile/MobileHeader';
+import { MobileLogin } from './components/mobile/MobileLogin';
+import { MobileTabBar } from './components/mobile/MobileTabBar';
+import { OfflineIndicator } from './components/mobile/OfflineIndicator';
+import { LoadingSpinner } from './components/ui/LoadingSpinner';
+import { ResponsivePreview } from './components/ui/ResponsivePreview';
+import { DEFAULT_ROUTE } from './config/routes';
+import { ANIMATION, DEFAULT_KPI_DATA, TIMING } from './constants/app';
+import { useAuth } from './hooks/useAuth';
+import { useNavigation } from './hooks/useNavigation';
+import { useTheme } from './hooks/useTheme';
+import { getTranslation } from './i18n';
+import { NotificationService } from './services/notificationService';
+import type { KPIData } from './types';
+import { isEmployeeRole } from './utils/auth';
 import { createKPIUpdateHandler, simulateKPIUpdates } from './utils/kpi';
-import type { UserProfile, KPIData } from './types';
+import { setupOnlineOfflineListeners } from './utils/pwa';
 import { subscribeToTables } from './utils/realtime';
 
+/**
+ * Asosiy App komponenti
+ *
+ * Bu komponent ilovaning asosiy strukturasini boshqaradi:
+ * - Authentication va session management
+ * - Theme management
+ * - Navigation
+ * - KPI data management
+ * - Real-time subscriptions
+ */
 function App() {
-  // State management
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [isDark, setIsDark] = useState(false);
+  // Custom hooks
+  const {
+    isAuthenticated,
+    userProfile,
+    isLoading,
+    handleLogin,
+    handleLogout,
+    handleProfileUpdate,
+  } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
+  const { activeTab, handleNavigate } = useNavigation();
+  const prefersReducedMotion = useReducedMotion();
+
+  // KPI data state
   const [kpiData, setKpiData] = useState<KPIData>(DEFAULT_KPI_DATA);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize app
-  useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        // Load theme preference
-        const savedTheme = safeLocalStorage.getItem<string>(LOCAL_STORAGE_KEYS.THEME, 'light');
-        setIsDark(savedTheme === 'dark');
-        
-        // Load active tab
-        const savedTab = safeLocalStorage.getItem<string>(LOCAL_STORAGE_KEYS.ACTIVE_TAB, 'dashboard');
-        setActiveTab(savedTab || 'dashboard');
-        
-        // Check authentication
-        const savedAuth = safeLocalStorage.getItem<{username: string; password: string}>(LOCAL_STORAGE_KEYS.AUTH, null);
-        if (savedAuth && savedAuth.username) {
-          const profile = getUserProfile(savedAuth.username);
-          setUserProfile(profile);
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
-        // Error is handled silently in production
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Responsive preview state
+  const [showResponsivePreview, setShowResponsivePreview] = useState(false);
 
-    initializeApp();
+  // Data update handler - use ref to keep stable reference
+  // setKpiData is stable from useState, so we can create handler once
+  const handleDataUpdateRef = useRef(createKPIUpdateHandler(setKpiData));
+
+  // Wrapper function for AppRouter prop - stable reference
+  const handleDataUpdate = useCallback((payload: unknown) => {
+    handleDataUpdateRef.current(payload);
   }, []);
 
-  // Theme management
-  const toggleTheme = useCallback(() => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    safeLocalStorage.setItem(LOCAL_STORAGE_KEYS.THEME, newTheme ? 'dark' : 'light');
-    
-    // Update DOM
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  // Apply theme to DOM
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  // Authentication handlers
-  const handleLogin = useCallback(async (username: string, password: string) => {
-    try {
-      setIsLoading(true);
-      const isValid = await validateCredentials({ username, password });
-      
-      if (isValid) {
-        const profile = getUserProfile(username);
-        setUserProfile(profile);
-        setIsAuthenticated(true);
-        safeLocalStorage.setItem(LOCAL_STORAGE_KEYS.AUTH, { username, password });
-        setActiveTab('dashboard');
-        safeLocalStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_TAB, 'dashboard');
-      } else {
-        throw new Error('Noto\'g\'ri foydalanuvchi nomi yoki parol');
-      }
-    } catch (error) {
-      // Error is handled by throwing to caller
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+  // Realtime callback - stable reference using ref (never changes)
+  const handleRealtimeUpdate = useCallback((payload: unknown) => {
+    handleDataUpdateRef.current(payload);
   }, []);
 
-  const handleLogout = useCallback(() => {
-    setUserProfile(null);
-    setIsAuthenticated(false);
-    setActiveTab('dashboard');
-    safeLocalStorage.setItem(LOCAL_STORAGE_KEYS.AUTH, null);
-    safeLocalStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_TAB, 'dashboard');
-  }, []);
+  /**
+   * Login handler - navigation'ni reset qiladi
+   *
+   * Bu funksiya login'ni amalga oshiradi va muvaffaqiyatli bo'lganda
+   * navigation'ni default route'ga (dashboard) o'rnatadi.
+   *
+   * @param username - Foydalanuvchi nomi
+   * @param password - Parol
+   */
+  const handleLoginWithNavigation = useCallback(
+    async (username: string, password: string) => {
+      await handleLogin(username, password);
+      handleNavigate(DEFAULT_ROUTE);
+    },
+    [handleLogin, handleNavigate]
+  );
 
-  // Navigation handler
-  const handleNavigate = useCallback((tab: string) => {
-    setActiveTab(tab);
-    safeLocalStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_TAB, tab);
-  }, []);
-
-  // Data update handler
-  const handleDataUpdate = useMemo(() => createKPIUpdateHandler(setKpiData), []);
-
-  // Profile update handler
-  const handleProfileUpdate = useCallback((profile: UserProfile) => {
-    setUserProfile(profile);
-  }, []);
+  /**
+   * Logout handler - navigation'ni reset qiladi
+   *
+   * Bu funksiya logout'ni amalga oshiradi va navigation'ni
+   * default route'ga (dashboard) o'rnatadi.
+   */
+  const handleLogoutWithNavigation = useCallback(() => {
+    handleLogout();
+    handleNavigate(DEFAULT_ROUTE);
+  }, [handleLogout, handleNavigate]);
 
   // KPI simulation
   useEffect(() => {
@@ -129,26 +105,206 @@ function App() {
     }
   }, [isAuthenticated]);
 
-  // Supabase Realtime subscription for multiple tables
+  // Online/Offline listeners
   useEffect(() => {
-    if (!isAuthenticated) return;
-    const cleanup = subscribeToTables(
-      ['kpi', 'tasks', 'attendance', 'shifts', 'penalties', 'reports'],
-      (payload) => {
-        (handleDataUpdate as unknown as (d: unknown) => void)(payload);
+    const cleanup = setupOnlineOfflineListeners(
+      () => {
+        console.log('[App] Online');
+      },
+      () => {
+        console.log('[App] Offline');
       }
     );
+
     return cleanup;
-  }, [isAuthenticated, handleDataUpdate]);
+  }, []);
+
+  // Supabase Realtime subscription for multiple tables
+  useEffect(() => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/96756b51-bfed-4036-adea-abfaa325b2f9', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        location: 'App.tsx:105',
+        message: 'Realtime subscription effect triggered',
+        data: { isAuthenticated },
+        timestamp: Date.now(),
+        sessionId: 'debug-session',
+        runId: 'post-fix',
+        hypothesisId: 'D',
+      }),
+    }).catch(() => {});
+    // #endregion agent log
+    if (!isAuthenticated) {
+      // #region agent log
+      fetch(
+        'http://127.0.0.1:7242/ingest/96756b51-bfed-4036-adea-abfaa325b2f9',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: 'App.tsx:108',
+            message: 'Skipping realtime subscription - not authenticated',
+            data: {},
+            timestamp: Date.now(),
+            sessionId: 'debug-session',
+            runId: 'post-fix',
+            hypothesisId: 'D',
+          }),
+        }
+      ).catch(() => {});
+      // #endregion agent log
+      return;
+    }
+
+    try {
+      // #region agent log
+      fetch(
+        'http://127.0.0.1:7242/ingest/96756b51-bfed-4036-adea-abfaa325b2f9',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: 'App.tsx:112',
+            message: 'Subscribing to realtime tables',
+            data: {
+              tables: [
+                'kpi',
+                'tasks',
+                'attendance',
+                'shifts',
+                'penalties',
+                'reports',
+              ],
+            },
+            timestamp: Date.now(),
+            sessionId: 'debug-session',
+            runId: 'post-fix',
+            hypothesisId: 'D',
+          }),
+        }
+      ).catch(() => {});
+      // #endregion agent log
+      const cleanup = subscribeToTables(
+        ['kpi', 'tasks', 'attendance', 'shifts', 'penalties', 'reports'],
+        handleRealtimeUpdate
+      );
+      // #region agent log
+      fetch(
+        'http://127.0.0.1:7242/ingest/96756b51-bfed-4036-adea-abfaa325b2f9',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: 'App.tsx:121',
+            message: 'Realtime subscription created successfully',
+            data: { hasCleanup: !!cleanup },
+            timestamp: Date.now(),
+            sessionId: 'debug-session',
+            runId: 'post-fix',
+            hypothesisId: 'D',
+          }),
+        }
+      ).catch(() => {});
+      // #endregion agent log
+      return cleanup;
+    } catch (error) {
+      // #region agent log
+      fetch(
+        'http://127.0.0.1:7242/ingest/96756b51-bfed-4036-adea-abfaa325b2f9',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: 'App.tsx:124',
+            message: 'Realtime subscription failed',
+            data: {
+              error: error instanceof Error ? error.message : String(error),
+            },
+            timestamp: Date.now(),
+            sessionId: 'debug-session',
+            runId: 'post-fix',
+            hypothesisId: 'D',
+          }),
+        }
+      ).catch(() => {});
+      // #endregion agent log
+      // Silent fail - realtime subscription optional
+      console.warn('[App] Realtime subscription failed:', error);
+      return () => {
+        // No-op cleanup
+      };
+    }
+  }, [isAuthenticated, handleRealtimeUpdate]);
+
+  // Notification service initialization
+  useEffect(() => {
+    if (!isAuthenticated || !userProfile) return;
+
+    // Start checking notifications every 5 minutes
+    NotificationService.startChecking(5, userProfile.name);
+
+    // Cleanup on unmount
+    return () => {
+      NotificationService.stopChecking();
+    };
+  }, [isAuthenticated, userProfile]);
+
+  // Global error handler for unhandled errors
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('[Global Error]', event.error);
+      console.error('[Global Error] Message:', event.message);
+      console.error('[Global Error] Filename:', event.filename);
+      console.error('[Global Error] Lineno:', event.lineno);
+      console.error('[Global Error] Colno:', event.colno);
+
+      // Android WebView uchun qo'shimcha ma'lumot
+      if (typeof window !== 'undefined' && window.navigator) {
+        const isAndroid = /Android/i.test(window.navigator.userAgent);
+        if (isAndroid) {
+          console.error('[Global Error] Android WebView error detected');
+        }
+      }
+
+      // Don't crash the app, just log the error
+    };
+
+    const handleRejection = (event: PromiseRejectionEvent) => {
+      console.error('[Unhandled Promise Rejection]', event.reason);
+      console.error('[Unhandled Promise Rejection] Type:', typeof event.reason);
+
+      // Android WebView uchun qo'shimcha ma'lumot
+      if (typeof window !== 'undefined' && window.navigator) {
+        const isAndroid = /Android/i.test(window.navigator.userAgent);
+        if (isAndroid) {
+          console.error(
+            '[Unhandled Promise Rejection] Android WebView rejection detected'
+          );
+        }
+      }
+
+      // Don't crash the app, just log the error
+    };
+
+    window.addEventListener('error', handleError, true);
+    window.addEventListener('unhandledrejection', handleRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError, true);
+      window.removeEventListener('unhandledrejection', handleRejection);
+    };
+  }, []);
+
+  // i18n helper
+  const t = (key: string) => getTranslation(key, 'uz');
 
   // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600 dark:text-gray-400">Boshqaruv yuklanmoqda...</p>
-        </div>
+        <LoadingSpinner message={t('loading.app')} />
       </div>
     );
   }
@@ -158,50 +314,120 @@ function App() {
     return (
       <ErrorBoundary>
         <div className="min-h-screen bg-gradient-to-br from-primary-500 to-primary-600">
-          <MobileLogin onLogin={handleLogin} isLoading={isLoading} />
+          <MobileLogin
+            onLogin={handleLoginWithNavigation}
+            isLoading={isLoading}
+          />
         </div>
       </ErrorBoundary>
     );
   }
 
-  // Main app
+  // Main app - userProfile null check
+  if (!userProfile) {
+    return (
+      <ErrorBoundary>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+          <LoadingSpinner message={t('loading.profile')} />
+        </div>
+      </ErrorBoundary>
+    );
+  }
+
+  // Debug logging
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/96756b51-bfed-4036-adea-abfaa325b2f9', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      location: 'App.tsx:218',
+      message: 'App render state',
+      data: {
+        isAuthenticated,
+        hasUserProfile: !!userProfile,
+        activeTab,
+        isLoading,
+      },
+      timestamp: Date.now(),
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'E',
+    }),
+  }).catch(() => {});
+  // #endregion agent log
+  console.log('[App] Render - isAuthenticated:', isAuthenticated);
+  console.log('[App] Render - userProfile:', userProfile);
+  console.log('[App] Render - activeTab:', activeTab);
+  console.log('[App] Render - isLoading:', isLoading);
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Header */}
         <MobileHeader
-          userProfile={userProfile as UserProfile}
+          userProfile={userProfile}
           isDark={isDark}
           onThemeToggle={toggleTheme}
+          onNavigate={handleNavigate}
+          onLogout={handleLogoutWithNavigation}
+          onResponsivePreview={() => setShowResponsivePreview(true)}
         />
 
+        {/* Offline Indicator */}
+        <OfflineIndicator />
+
         {/* Main Content */}
-        <main className="pt-20 pb-24">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <AppRouter
-                activeTab={activeTab}
-                kpiData={kpiData}
-                userProfile={userProfile as UserProfile}
-                isDark={isDark}
-                onDataUpdate={handleDataUpdate}
-                onNavigate={handleNavigate}
-                onThemeToggle={toggleTheme}
-                onProfileUpdate={handleProfileUpdate}
-                onLogout={handleLogout}
-              />
-            </motion.div>
-          </AnimatePresence>
+        <main
+          className="pt-20 pb-24"
+          style={{
+            minHeight: 'calc(100vh - 80px)',
+            backgroundColor: 'var(--bg-color, #f9fafb)',
+          }}
+        >
+          <div className="container mx-auto px-4">
+            {prefersReducedMotion ? (
+              <div key={activeTab} style={{ minHeight: '60vh' }}>
+                <AppRouter
+                  activeTab={activeTab}
+                  kpiData={kpiData}
+                  userProfile={userProfile}
+                  isDark={isDark}
+                  onDataUpdate={handleDataUpdate}
+                  onNavigate={handleNavigate}
+                  onThemeToggle={toggleTheme}
+                  onProfileUpdate={handleProfileUpdate}
+                  onLogout={handleLogoutWithNavigation}
+                />
+              </div>
+            ) : (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: ANIMATION.DURATION_MEDIUM }}
+                  style={{ minHeight: '60vh' }}
+                >
+                  <AppRouter
+                    activeTab={activeTab}
+                    kpiData={kpiData}
+                    userProfile={userProfile}
+                    isDark={isDark}
+                    onDataUpdate={handleDataUpdate}
+                    onNavigate={handleNavigate}
+                    onThemeToggle={toggleTheme}
+                    onProfileUpdate={handleProfileUpdate}
+                    onLogout={handleLogoutWithNavigation}
+                  />
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </div>
         </main>
 
-        {/* Bottom Navigation */}
-        {userProfile && isEmployeeRole(userProfile.role) ? (
+        {/* Bottom Navigation - Hidden on desktop (lg+) via CSS */}
+        {isEmployeeRole(userProfile.role) ? (
           <EmployeeTabBar
             activeTab={activeTab}
             onNavigate={handleNavigate}
@@ -211,7 +437,7 @@ function App() {
           <MobileTabBar
             activeTab={activeTab}
             onNavigate={handleNavigate}
-            userProfile={userProfile as UserProfile}
+            userProfile={userProfile}
           />
         )}
 
@@ -220,7 +446,13 @@ function App() {
           position="top-center"
           richColors
           closeButton
-          duration={4000}
+          duration={TIMING.TOAST_DURATION}
+        />
+
+        {/* Responsive Preview Modal */}
+        <ResponsivePreview
+          isOpen={showResponsivePreview}
+          onClose={() => setShowResponsivePreview(false)}
         />
       </div>
     </ErrorBoundary>

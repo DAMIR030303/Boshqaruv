@@ -1,27 +1,20 @@
-// import { DEFAULT_KPI_DATA } from '../constants/app';
+import type { Dispatch, SetStateAction } from 'react';
 
-export interface KPIData {
-  attendance: {
-    present: number;
-    late: number;
-    absent: number;
-    total: number;
-  };
-  tasks: {
-    completed: number;
-    inProgress: number;
-    pending: number;
-    total: number;
-  };
-  penalties: {
-    active: number;
-    resolved: number;
-    total: number;
-  };
-}
+import { TIMING } from '../constants/app';
+import type { KPIData } from '../types';
 
-// type KpiSections = keyof KPIData;
-export const createKPIUpdateHandler = (setKpiData: React.Dispatch<React.SetStateAction<KPIData>>) => {
+/**
+ * KPI ma'lumotlarini yangilash uchun handler yaratadi
+ *
+ * Bu funksiya Supabase Realtime yoki boshqa real-time source'dan
+ * kelgan ma'lumotlarni KPI state'ga to'g'ri formatda qo'shadi.
+ *
+ * @param setKpiData - React state setter funksiyasi
+ * @returns Ma'lumotlarni yangilash funksiyasi
+ */
+export const createKPIUpdateHandler = (
+  setKpiData: Dispatch<SetStateAction<KPIData>>
+) => {
   return (data: unknown) => {
     setKpiData(prev => {
       if (!data || typeof data !== 'object') {
@@ -30,18 +23,32 @@ export const createKPIUpdateHandler = (setKpiData: React.Dispatch<React.SetState
       }
 
       const updated: KPIData = { ...prev };
-      
-      const d = data as any;
-      if (d.type) {
-        switch (d.type) {
+
+      // Type guard for typed updates
+      interface TypedUpdate {
+        type?: string;
+        data?: Partial<KPIData[keyof KPIData]>;
+      }
+
+      const typedData = data as TypedUpdate | Partial<KPIData>;
+
+      if ('type' in typedData && typedData.type) {
+        // Typed update (e.g., from Supabase Realtime)
+        switch (typedData.type) {
           case 'attendance_update':
-            if (updated.attendance && d.data) {
-              updated.attendance = { ...updated.attendance, ...d.data };
+            if (updated.attendance && typedData.data) {
+              updated.attendance = {
+                ...updated.attendance,
+                ...(typedData.data as Partial<KPIData['attendance']>),
+              };
             }
             break;
           case 'task_update':
-            if (updated.tasks && d.data) {
-              updated.tasks = { ...updated.tasks, ...d.data };
+            if (updated.tasks && typedData.data) {
+              updated.tasks = {
+                ...updated.tasks,
+                ...(typedData.data as Partial<KPIData['tasks']>),
+              };
             }
             break;
           default:
@@ -49,11 +56,38 @@ export const createKPIUpdateHandler = (setKpiData: React.Dispatch<React.SetState
             break;
         }
       } else {
-        // Regular update without type
-        const partialData = d as Partial<KPIData>;
-        (Object.keys(partialData) as Array<keyof KPIData>).forEach((key) => {
+        // Regular partial update
+        const partialData = typedData as Partial<KPIData>;
+        (Object.keys(partialData) as Array<keyof KPIData>).forEach(key => {
           if (key in updated && partialData[key]) {
-            (updated as any)[key] = { ...updated[key], ...partialData[key] };
+            const section = updated[key];
+            const update = partialData[key];
+            if (
+              section &&
+              update &&
+              typeof section === 'object' &&
+              typeof update === 'object' &&
+              !Array.isArray(section) &&
+              !Array.isArray(update)
+            ) {
+              // Type-safe merge for KPI sections
+              if (key === 'attendance') {
+                updated.attendance = {
+                  ...(section as KPIData['attendance']),
+                  ...(update as Partial<KPIData['attendance']>),
+                };
+              } else if (key === 'tasks') {
+                updated.tasks = {
+                  ...(section as KPIData['tasks']),
+                  ...(update as Partial<KPIData['tasks']>),
+                };
+              } else if (key === 'penalties') {
+                updated.penalties = {
+                  ...(section as KPIData['penalties']),
+                  ...(update as Partial<KPIData['penalties']>),
+                };
+              }
+            }
           }
         });
       }
@@ -63,7 +97,18 @@ export const createKPIUpdateHandler = (setKpiData: React.Dispatch<React.SetState
   };
 };
 
-export const simulateKPIUpdates = (setKpiData: React.Dispatch<React.SetStateAction<KPIData>>) => {
+/**
+ * KPI ma'lumotlarini simulyatsiya qiladi (development uchun)
+ *
+ * Bu funksiya development muhitida real-time ma'lumotlar
+ * o'rniga simulyatsiya qilingan yangilanishlarni yaratadi.
+ *
+ * @param setKpiData - React state setter funksiyasi
+ * @returns Cleanup funksiyasi (interval'ni to'xtatish uchun)
+ */
+export const simulateKPIUpdates = (
+  setKpiData: Dispatch<SetStateAction<KPIData>>
+) => {
   const interval = setInterval(() => {
     if (Math.random() < 0.1) {
       setKpiData(prev => {
@@ -71,17 +116,28 @@ export const simulateKPIUpdates = (setKpiData: React.Dispatch<React.SetStateActi
           // Missing attendance data is ignored
           return prev;
         }
-        
+
         return {
           ...prev,
           attendance: {
             ...prev.attendance,
-            present: (prev.attendance.present || 0) + (Math.random() > 0.5 ? 1 : 0)
-          }
+            present:
+              (prev.attendance.present || 0) + (Math.random() > 0.5 ? 1 : 0),
+          },
         };
       });
     }
-  }, 5000);
+  }, TIMING.KPI_UPDATE_INTERVAL);
 
   return () => clearInterval(interval);
 };
+
+/**
+ * KPI ma'lumotlarini simulyatsiya qiladi (development uchun)
+ *
+ * Bu funksiya development muhitida real-time ma'lumotlar
+ * o'rniga simulyatsiya qilingan yangilanishlarni yaratadi.
+ *
+ * @param setKpiData - React state setter funksiyasi
+ * @returns Cleanup funksiyasi (interval'ni to'xtatish uchun)
+ */

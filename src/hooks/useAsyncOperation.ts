@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 interface UseAsyncOperationState<T> {
   data: T | null;
@@ -6,12 +6,18 @@ interface UseAsyncOperationState<T> {
   error: string | null;
 }
 
-interface UseAsyncOperationReturn<T, Args extends unknown[] = unknown[]> extends UseAsyncOperationState<T> {
+interface UseAsyncOperationReturn<
+  T,
+  Args extends unknown[] = unknown[],
+> extends UseAsyncOperationState<T> {
   execute: (...args: Args) => Promise<T | null>;
   reset: () => void;
 }
 
-export function useAsyncOperation<T = unknown, Args extends unknown[] = unknown[]>(
+export function useAsyncOperation<
+  T = unknown,
+  Args extends unknown[] = unknown[],
+>(
   asyncFunction: (...args: Args) => Promise<T>,
   initialData: T | null = null
 ): UseAsyncOperationReturn<T, Args> {
@@ -29,7 +35,8 @@ export function useAsyncOperation<T = unknown, Args extends unknown[] = unknown[
         setState(prev => ({ ...prev, data: result, loading: false }));
         return result;
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+        const errorMessage =
+          error instanceof Error ? error.message : 'An error occurred';
         setState(prev => ({ ...prev, error: errorMessage, loading: false }));
         return null;
       }

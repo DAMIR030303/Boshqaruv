@@ -1,37 +1,50 @@
-import { Suspense, lazy } from 'react';
-import { LoadingFallback } from './components/LoadingFallback';
-import { isEmployeeRole } from './utils/auth';
+import { ComponentType } from 'react';
+
+import { LazyRoute } from './components/LazyRoute';
+import {
+  DEFAULT_ROUTE,
+  type RouteComponentProps,
+  adminRoutes,
+  employeeRoutes,
+  findRoute,
+} from './config/routes';
 import type { KPIData, UserProfile } from './types';
+import { isEmployeeRole } from './utils/auth';
 
-// Lazy load mobile-optimized components
-const MobileDashboard = lazy(() => import('./components/mobile/MobileDashboard').then(m => ({ default: m.MobileDashboard })));
-const MobileEmployees = lazy(() => import('./components/mobile/MobileEmployees').then(m => ({ default: m.MobileEmployees })));
-const MobileShifts = lazy(() => import('./components/mobile/MobileShifts').then(m => ({ default: m.MobileShifts })));
-const MobileTasks = lazy(() => import('./components/mobile/MobileTasks').then(m => ({ default: m.MobileTasks })));
-const MobileAttendance = lazy(() => import('./components/mobile/MobileAttendance').then(m => ({ default: m.MobileAttendance })));
-const MobilePenalties = lazy(() => import('./components/mobile/MobilePenalties').then(m => ({ default: m.MobilePenalties })));
-const MobileReports = lazy(() => import('./components/mobile/MobileReports').then(m => ({ default: m.MobileReports })));
-const MobileSettings = lazy(() => import('./components/mobile/MobileSettings').then(m => ({ default: m.MobileSettings })));
-const MobileProfile = lazy(() => import('./components/mobile/MobileProfile').then(m => ({ default: m.MobileProfile })));
-
-// Employee components
-const EmployeeDashboard = lazy(() => import('./components/mobile/EmployeeDashboard').then(m => ({ default: m.EmployeeDashboard })));
-const EmployeeTasks = lazy(() => import('./components/mobile/EmployeeTasks').then(m => ({ default: m.EmployeeTasks })));
-const EmployeeAttendance = lazy(() => import('./components/mobile/EmployeeAttendance').then(m => ({ default: m.EmployeeAttendance })));
-const EmployeeReports = lazy(() => import('./components/mobile/EmployeeReports').then(m => ({ default: m.EmployeeReports })));
-
+/**
+ * App Router komponenti props
+ */
 interface AppRouterProps {
+  /** Aktiv tab nomi */
   activeTab: string;
+  /** KPI ma'lumotlari */
   kpiData: KPIData;
+  /** Foydalanuvchi profil ma'lumotlari */
   userProfile: UserProfile;
+  /** Dark theme holati */
   isDark: boolean;
+  /** Ma'lumotlar yangilanish handler */
   onDataUpdate: (_data: unknown) => void;
+  /** Navigatsiya handler */
   onNavigate: (tab: string) => void;
+  /** Theme toggle handler */
   onThemeToggle: () => void;
+  /** Profil yangilanish handler */
   onProfileUpdate: (profile: UserProfile) => void;
+  /** Logout handler */
   onLogout: () => void;
 }
 
+/**
+ * App Router - Asosiy routing komponenti
+ *
+ * Bu komponent foydalanuvchi roliga qarab to'g'ri sahifani
+ * ko'rsatadi va lazy loading orqali performance'ni optimallashtiradi.
+ * Route konfiguratsiyasi markazlashtirilgan va takrorlanish kamaytirilgan.
+ *
+ * @param props - AppRouterProps
+ * @returns JSX element
+ */
 export function AppRouter({
   activeTab,
   kpiData,
@@ -41,123 +54,79 @@ export function AppRouter({
   onNavigate,
   onThemeToggle,
   onProfileUpdate,
-  onLogout
+  onLogout,
 }: AppRouterProps) {
-  const commonProps = {
+  // Foydalanuvchi roliga qarab route konfiguratsiyasini tanlash
+  const routes = isEmployeeRole(userProfile.role)
+    ? employeeRoutes
+    : adminRoutes;
+
+  // Aktiv route'ni topish
+  let route = findRoute(routes, activeTab);
+
+  // Debug logging
+  console.log('[AppRouter] activeTab:', activeTab);
+  console.log('[AppRouter] userProfile.role:', userProfile.role);
+  console.log('[AppRouter] routes count:', routes.length);
+  console.log('[AppRouter] route found:', route ? route.name : 'NOT FOUND');
+
+  // Agar route topilmasa, 404 ko'rsatish
+  if (!route) {
+    const defaultRoute = findRoute(routes, DEFAULT_ROUTE);
+    if (!defaultRoute) {
+      // Xato holati - hech qanday route topilmaydi
+      return (
+        <div
+          className="mobile-content"
+          style={{
+            minHeight: '100vh',
+            backgroundColor: '#f9fafb',
+            padding: '2rem',
+          }}
+        >
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              Sahifa topilmadi
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Siz qidirayotgan sahifa mavjud emas yoki o'chirilgan.
+            </p>
+            <button
+              onClick={() => onNavigate(DEFAULT_ROUTE)}
+              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Bosh sahifaga qaytish
+            </button>
+          </div>
+        </div>
+      );
+    }
+    // Default route'ni ko'rsatish
+    route = defaultRoute;
+  }
+
+  // Umumiy props'lar
+  const commonProps: RouteComponentProps = {
     kpiData,
     userProfile,
-    onDataUpdate
+    onDataUpdate,
+    onNavigate,
+    isDark,
+    onThemeToggle,
+    onProfileUpdate,
+    onLogout,
   };
 
-  // Employee/Marketolog interface
-  if (isEmployeeRole(userProfile.role)) {
-    switch (activeTab) {
-      case 'dashboard':
-        return (
-          <Suspense fallback={<LoadingFallback message="Dashboard yuklanmoqda..." />}>
-            <EmployeeDashboard {...commonProps} onNavigate={onNavigate} />
-          </Suspense>
-        );
-      case 'tasks':
-        return (
-          <Suspense fallback={<LoadingFallback message="Vazifalar yuklanmoqda..." />}>
-            <EmployeeTasks {...commonProps} />
-          </Suspense>
-        );
-      case 'attendance':
-        return (
-          <Suspense fallback={<LoadingFallback message="Davomat ma'lumotlari yuklanmoqda..." />}>
-            <EmployeeAttendance {...commonProps} />
-          </Suspense>
-        );
-      case 'reports':
-        return (
-          <Suspense fallback={<LoadingFallback message="Hisobotlar yuklanmoqda..." />}>
-            <EmployeeReports {...commonProps} />
-          </Suspense>
-        );
-      case 'settings':
-        return (
-          <Suspense fallback={<LoadingFallback message="Sozlamalar yuklanmoqda..." />}>
-            <MobileSettings {...commonProps} isDark={isDark} onThemeToggle={onThemeToggle} />
-          </Suspense>
-        );
-      case 'profile':
-        return (
-          <Suspense fallback={<LoadingFallback message="Profil yuklanmoqda..." />}>
-            <MobileProfile {...commonProps} onProfileUpdate={onProfileUpdate} onLogout={onLogout} />
-          </Suspense>
-        );
-      default:
-        return (
-          <Suspense fallback={<LoadingFallback message="Dashboard yuklanmoqda..." />}>
-            <EmployeeDashboard {...commonProps} onNavigate={onNavigate} />
-          </Suspense>
-        );
-    }
-  }
+  // Qo'shimcha props'larni qo'shish
+  const finalProps = route.additionalProps
+    ? { ...commonProps, ...route.additionalProps(commonProps) }
+    : commonProps;
 
-  // Admin/Manager interface
-  switch (activeTab) {
-    case 'dashboard':
-      return (
-        <Suspense fallback={<LoadingFallback message="Dashboard yuklanmoqda..." />}>
-          <MobileDashboard {...commonProps} onNavigate={onNavigate} />
-        </Suspense>
-      );
-    case 'employees':
-      return (
-        <Suspense fallback={<LoadingFallback message="Xodimlar ma'lumotlari yuklanmoqda..." />}>
-          <MobileEmployees {...commonProps} />
-        </Suspense>
-      );
-    case 'shifts':
-      return (
-        <Suspense fallback={<LoadingFallback message="Smenalar yuklanmoqda..." />}>
-          <MobileShifts {...commonProps} />
-        </Suspense>
-      );
-    case 'tasks':
-      return (
-        <Suspense fallback={<LoadingFallback message="Vazifalar yuklanmoqda..." />}>
-          <MobileTasks {...commonProps} />
-        </Suspense>
-      );
-    case 'attendance':
-      return (
-        <Suspense fallback={<LoadingFallback message="Davomat ma'lumotlari yuklanmoqda..." />}>
-          <MobileAttendance {...commonProps} />
-        </Suspense>
-      );
-    case 'penalties':
-      return (
-        <Suspense fallback={<LoadingFallback message="Jarimalar yuklanmoqda..." />}>
-          <MobilePenalties {...commonProps} />
-        </Suspense>
-      );
-    case 'reports':
-      return (
-        <Suspense fallback={<LoadingFallback message="Hisobotlar yuklanmoqda..." />}>
-          <MobileReports {...commonProps} />
-        </Suspense>
-      );
-    case 'settings':
-      return (
-        <Suspense fallback={<LoadingFallback message="Sozlamalar yuklanmoqda..." />}>
-          <MobileSettings {...commonProps} isDark={isDark} onThemeToggle={onThemeToggle} />
-        </Suspense>
-      );
-    case 'profile':
-      return (
-        <Suspense fallback={<LoadingFallback message="Profil yuklanmoqda..." />}>
-          <MobileProfile {...commonProps} onProfileUpdate={onProfileUpdate} onLogout={onLogout} />
-        </Suspense>
-      );
-    default:
-      return (
-        <Suspense fallback={<LoadingFallback message="Dashboard yuklanmoqda..." />}>
-          <MobileDashboard {...commonProps} onNavigate={onNavigate} />
-        </Suspense>
-      );
-  }
+  return (
+    <LazyRoute
+      component={route.component as ComponentType<Record<string, unknown>>}
+      message={route.loadingMessage}
+      props={finalProps}
+    />
+  );
 }
