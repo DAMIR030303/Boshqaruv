@@ -19,16 +19,8 @@ export default defineConfig({
     host: true
   },
   build: {
-    // Optimize bundle size
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: false, // Keep console for Android WebView debugging
-        drop_debugger: true,
-        // Keep console.error and console.warn for error tracking
-        pure_funcs: ['console.trace'], // Only remove trace
-      },
-    },
+    // Optimize bundle size - use esbuild instead of terser for faster builds
+    minify: 'esbuild',
     // Split vendor chunks
     rollupOptions: {
       output: {
@@ -44,7 +36,7 @@ export default defineConfig({
     },
     // Chunk size warnings
     chunkSizeWarningLimit: 1000,
-    // Source maps only in development
+    // Source maps disabled for faster builds
     sourcemap: false,
     // Assets optimization
     assetsInlineLimit: 4096,
@@ -52,6 +44,8 @@ export default defineConfig({
     cssCodeSplit: true,
     // Target modern browsers
     target: 'es2020',
+    // Faster builds
+    reportCompressedSize: false,
   },
   // Optimize dependencies
   optimizeDeps: {

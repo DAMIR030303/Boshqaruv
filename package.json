@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
+    "build:full": "tsc && vite build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 20",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
@@ -19,9 +20,9 @@
     "cap:add:android": "cap add android",
     "cap:sync": "cap sync",
     "cap:open:android": "cap open android",
-    "cap:build:android": "pnpm build && cap sync android && cd android && ./gradlew assembleRelease",
-    "cap:build:android:debug": "pnpm build && cap sync android && cd android && ./gradlew assembleDebug",
-    "android:build": "pnpm build && cap sync android",
+    "cap:build:android": "pnpm build:full && cap sync android && cd android && ./gradlew assembleRelease",
+    "cap:build:android:debug": "pnpm build:full && cap sync android && cd android && ./gradlew assembleDebug",
+    "android:build": "pnpm build:full && cap sync android",
     "android:open": "cap open android"
   },
   "dependencies": {
