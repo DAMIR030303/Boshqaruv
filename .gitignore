@@ -219,3 +219,27 @@ node_modules/
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Android Security & Build Files (CRITICAL)
+android/app/google-services.json
+android/local.properties
+android/keystore.jks
+android/app/release/
+android/app/debug/
+android/*.keystore
+android/*.jks
+android/key.properties
+android/app/src/main/assets/
+android/app/build/
+android/.gradle/
+android/.idea/
+android/captures/
+
+# Sensitive Files
+*.keystore
+*.jks
+google-services.json
+key.properties
+
+# Test Results
+qa_results.txt
