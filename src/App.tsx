@@ -5,13 +5,9 @@ import { Toaster } from 'sonner';
 
 import { AppRouter } from './AppRouter';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import {
-  EmployeeSidebar,
-  EmployeeTabBar,
-} from './components/mobile/EmployeeTabBar';
-import { MobileHeader } from './components/mobile/MobileHeader';
+import { Header } from './components/layout/Header';
+import { Sidebar } from './components/layout/Sidebar';
 import { MobileLogin } from './components/mobile/MobileLogin';
-import { DesktopSidebar, MobileTabBar } from './components/mobile/MobileTabBar';
 import { OfflineIndicator } from './components/mobile/OfflineIndicator';
 import { LoadingSpinner } from './components/ui/LoadingSpinner';
 import { ResponsivePreview } from './components/ui/ResponsivePreview';
@@ -23,7 +19,6 @@ import { useTheme } from './hooks/useTheme';
 import { getTranslation } from './i18n';
 import { NotificationService } from './services/notificationService';
 import type { KPIData } from './types';
-import { isEmployeeRole } from './utils/auth';
 import { createKPIUpdateHandler, simulateKPIUpdates } from './utils/kpi';
 import { setupOnlineOfflineListeners } from './utils/pwa';
 import { subscribeToTables } from './utils/realtime';
@@ -107,23 +102,7 @@ function App() {
     return () => NotificationService.stopChecking();
   }, [isAuthenticated, userProfile]);
 
-  // Global error handler
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      console.error('[Global Error]', event.message);
-    };
-    const handleRejection = (event: PromiseRejectionEvent) => {
-      console.error('[Unhandled Rejection]', event.reason);
-    };
-
-    window.addEventListener('error', handleError, true);
-    window.addEventListener('unhandledrejection', handleRejection);
-
-    return () => {
-      window.removeEventListener('error', handleError, true);
-      window.removeEventListener('unhandledrejection', handleRejection);
-    };
-  }, []);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const t = (key: string) => getTranslation(key, 'uz');
 
@@ -161,47 +140,33 @@ function App() {
     );
   }
 
-  const isEmployee = isEmployeeRole(userProfile.role);
-
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        {/* Desktop Sidebar - lg+ screens only */}
-        <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:w-72 lg:border-r lg:border-gray-200 lg:dark:border-gray-800 lg:bg-white lg:dark:bg-gray-900">
-          {isEmployee ? (
-            <EmployeeSidebar
-              activeTab={activeTab}
-              onNavigate={handleNavigate}
-              userProfile={userProfile}
-            />
-          ) : (
-            <DesktopSidebar
-              activeTab={activeTab}
-              onNavigate={handleNavigate}
-              userProfile={userProfile}
-            />
-          )}
-        </aside>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+        {/* Sidebar (Desktop & Mobile Drawer) */}
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          activeTab={activeTab}
+          onNavigate={handleNavigate}
+          userProfile={userProfile}
+        />
 
-        {/* Main Content Area - shifts right on desktop */}
-        <div className="lg:pl-72 flex flex-col min-h-screen">
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-w-0 lg:ml-64 transition-all duration-300">
           {/* Header */}
-          <MobileHeader
+          <Header
+            onMenuClick={() => setIsSidebarOpen(true)}
             userProfile={userProfile}
-            isDark={isDark}
-            onThemeToggle={toggleTheme}
-            onNavigate={handleNavigate}
-            onLogout={handleLogoutWithNavigation}
-            onResponsivePreview={() => setShowResponsivePreview(true)}
           />
 
           <OfflineIndicator />
 
-          {/* Main Content */}
-          <main className="flex-1 pt-16 pb-20 lg:pt-4 lg:pb-4">
-            <div className="container mx-auto px-4 max-w-7xl">
+          {/* Main Scrollable Content */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+            <div className="mx-auto max-w-7xl animate-in fade-in zoom-in-95 duration-300">
               {prefersReducedMotion ? (
-                <div key={activeTab} className="min-h-[60vh]">
+                <div key={activeTab}>
                   <AppRouter
                     activeTab={activeTab}
                     kpiData={kpiData}
@@ -222,7 +187,6 @@ function App() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: ANIMATION.DURATION_MEDIUM }}
-                    className="min-h-[60vh]"
                   >
                     <AppRouter
                       activeTab={activeTab}
@@ -240,26 +204,11 @@ function App() {
               )}
             </div>
           </main>
-
-          {/* Bottom Navigation - Mobile/Tablet only */}
-          {isEmployee ? (
-            <EmployeeTabBar
-              activeTab={activeTab}
-              onNavigate={handleNavigate}
-              userProfile={userProfile}
-            />
-          ) : (
-            <MobileTabBar
-              activeTab={activeTab}
-              onNavigate={handleNavigate}
-              userProfile={userProfile}
-            />
-          )}
         </div>
 
         {/* Toast notifications */}
         <Toaster
-          position="top-center"
+          position="top-right"
           richColors
           closeButton
           duration={TIMING.TOAST_DURATION}
